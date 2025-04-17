@@ -163,14 +163,77 @@ namespace Space_FaceID.Data.Context
             modelBuilder.Entity<User>(entity =>
             {
                 entity.Property(u => u.Username).IsRequired().HasMaxLength(50);
-                entity.Property(u => u.Email).IsRequired().HasMaxLength(100);
+                entity.Property(u => u.Email).HasMaxLength(100);
                 entity.Property(u => u.PasswordHash).IsRequired();
+                entity.Property(u => u.IsActive).IsRequired();
+            });
+
+            modelBuilder.Entity<UserProfile>(entity =>
+            {
+                entity.Property(up => up.UserId).IsRequired();
+                entity.Property(up => up.FirstName).HasMaxLength(50);
+                entity.Property(up => up.LastName).HasMaxLength(50);
+                entity.Property(up => up.PhoneNumber).HasMaxLength(20);
+                entity.Property(up => up.Gender).HasMaxLength(10);
+            });
+
+            modelBuilder.Entity<UserRole>(entity =>
+            {
+                entity.Property(ur => ur.UserId).IsRequired();
+                entity.Property(ur => ur.RoleId).IsRequired();
+                entity.Property(ur => ur.CreatedAt).IsRequired();
+                entity.Property(ur => ur.CreatedBy).IsRequired();
+            });
+
+            modelBuilder.Entity<FaceData>(entity =>
+            {
+                entity.Property(fd => fd.UserId).IsRequired();
+                entity.Property(fd => fd.FaceEncoding).IsRequired();
+                entity.Property(fd => fd.FaceImage).IsRequired();
+                entity.Property(fd => fd.CreatedAt).IsRequired();
+            });
+
+            modelBuilder.Entity<AuthenticationLog>(entity =>
+            {
+                entity.Property(atl => atl.Username).IsRequired().HasMaxLength(50);
+                entity.Property(atl => atl.IsSuccessful).IsRequired();
+                entity.Property(atl => atl.Timestamp).IsRequired();
+                entity.Property(atl => atl.FailureReason).IsRequired().HasMaxLength(200);
+            });
+
+            modelBuilder.Entity<FaceAuthenticationSettings>(entity =>
+            {
+                entity.Property(fats => fats.MatchThreshold).IsRequired();
+                entity.Property(fats => fats.RequireLivenessCheck).IsRequired();
+                entity.Property(fats => fats.MaxAttempts).IsRequired();
+                entity.Property(fats => fats.IsEnabled).IsRequired();
+                entity.Property(fats => fats.UpdatedBy).IsRequired().HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<FaceRecognitionModel>(entity =>
+            {
+                entity.Property(frm => frm.ModelName).IsRequired();
+                entity.Property(frm => frm.ModelVersion).IsRequired();
+                entity.Property(frm => frm.IsActive).IsRequired();
+                entity.Property(frm => frm.CreatedAt).IsRequired();
+                entity.Property(frm => frm.CreatedBy).IsRequired().HasMaxLength(50);
             });
 
             modelBuilder.Entity<Role>(entity =>
             {
                 entity.Property(r => r.Name).IsRequired();
                 entity.Property(r => r.Description).HasMaxLength(200);
+                entity.Property(r => r.IsDefault).IsRequired();
+                entity.Property(r => r.IsSystem).IsRequired();
+                entity.Property(r => r.CreatedAt).IsRequired();
+            });
+
+            modelBuilder.Entity<RolePermission>(entity =>
+            {
+                entity.Property(rp => rp.RoleId).IsRequired();
+                entity.Property(rp => rp.PermissionId).IsRequired();
+                entity.Property(rp => rp.CreatedAt).IsRequired();
+                entity.Property(rp => rp.CreatedBy).HasMaxLength(50);
             });
 
             modelBuilder.Entity<Permission>(entity =>
@@ -178,6 +241,17 @@ namespace Space_FaceID.Data.Context
                 entity.Property(p => p.Name).IsRequired();
                 entity.Property(p => p.Description).HasMaxLength(200);
                 entity.Property(p => p.Category).IsRequired();
+                entity.Property(p => p.IsSystem).IsRequired();
+            });
+
+
+            modelBuilder.Entity<SystemAuditLog>(entity =>
+            {
+                entity.Property(p => p.Action).IsRequired().HasMaxLength(100);
+                entity.Property(p => p.UserId).IsRequired();
+                entity.Property(p => p.Description).IsRequired().HasMaxLength(200);
+                entity.Property(p => p.Details).IsRequired();
+                entity.Property(p => p.Timestamp).IsRequired();
             });
 
             // ข้อมูลเริ่มต้นสามารถเพิ่มได้ที่นี่ (SeedData method)

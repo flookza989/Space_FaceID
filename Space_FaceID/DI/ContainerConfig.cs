@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Space_FaceID.Data.Context;
 
 namespace Space_FaceID.DI
 {
@@ -7,6 +9,10 @@ namespace Space_FaceID.DI
         public static IServiceCollection ConfigureServices(this IServiceCollection services)
         {
             var assembly = typeof(App).Assembly;
+
+            // ลงทะเบียน DbContext
+            services.AddDbContext<FaceIDDbContext>(options =>
+                options.UseSqlite("Data Source=faceID.db"));
 
             // Auto register Services and Repositories
             services.Scan(scan => scan
@@ -24,10 +30,6 @@ namespace Space_FaceID.DI
                 .AddClasses(classes => classes.Where(type => type.Name.EndsWith("ViewModel") && !type.IsAbstract))
                     .AsSelf()
                     .WithTransientLifetime());
-
-            // เพิ่มการลงทะเบียน DbContext ถ้าใช้ EF Core
-            // services.AddDbContext<AppDbContext>(options => 
-            //     options.UseSqlite("Data Source=facerecognition.db"));
 
             return services;
         }

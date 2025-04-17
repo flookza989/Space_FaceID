@@ -13,7 +13,7 @@ namespace Space_FaceID.Models.Entities
         public bool RequireLivenessCheck { get; set; }  // ต้องการการตรวจสอบว่าเป็นใบหน้าจริงไม่ใช่รูปถ่าย
         public int MaxAttempts { get; set; }  // จำนวนครั้งสูงสุดที่ล้มเหลวก่อนถูกล็อค
         public bool IsEnabled { get; set; }  // เปิดใช้ระบบยืนยันตัวตนด้วยใบหน้าหรือไม่
-        public DateTime LastUpdated { get; set; }
+        public DateTime? LastUpdated { get; set; }
         public string UpdatedBy { get; set; } = null!;  // ผู้อัปเดตการตั้งค่าล่าสุด
     }
 }

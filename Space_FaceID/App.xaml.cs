@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Space_FaceID.Data.Seed;
 using Space_FaceID.DI;
 using System.Configuration;
 using System.Data;
@@ -23,7 +24,13 @@ namespace Space_FaceID
 
         protected override async void OnStartup(StartupEventArgs e)
         {
+            SQLitePCL.Batteries.Init();
+
+
             await _host.StartAsync();
+
+            // เพิ่มข้อมูลเริ่มต้นลงในฐานข้อมูล
+            await DataSeeder.SeedDatabase(_host);
 
             var mainWindow = new MainWindow
             {
