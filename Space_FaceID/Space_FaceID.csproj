@@ -1,47 +1,46 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UseWPF>true</UseWPF>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UseWPF>true</UseWPF>
+		<UserSecretsId>4b2a644c-bf67-4daa-a711-b8a691393e0b</UserSecretsId>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Helpers\Extensions\" />
-    <Folder Include="Helpers\Converters\" />
-    <Folder Include="Models\DTOs\" />
-    <Folder Include="Configuration\" />
-    <Folder Include="Repositories\Interfaces\" />
-    <Folder Include="Repositories\Implementation\" />
-    <Folder Include="Resources\Images\" />
-    <Folder Include="Resources\Templates\" />
-    <Folder Include="Resources\Styles\" />
-    <Folder Include="Services\Interfaces\" />
-    <Folder Include="Services\Implementation\" />
-    <Folder Include="Services\FaceDetection\" />
-    <Folder Include="Services\Camera\" />
-    <Folder Include="Services\Authentication\" />
-    <Folder Include="Utils\Logging\" />
-    <Folder Include="Utils\Security\" />
-    <Folder Include="ViewModels\Base\" />
-    <Folder Include="ViewModels\Dialog\" />
-    <Folder Include="Views\Controls\" />
-    <Folder Include="Views\Windows\" />
-    <Folder Include="Views\Pages\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Models\DTOs\" />
+		<Folder Include="Configuration\" />
+		<Folder Include="Resources\Images\" />
+		<Folder Include="Resources\Templates\" />
+		<Folder Include="Resources\Styles\" />
+		<Folder Include="Utils\Logging\" />
+		<Folder Include="Utils\Security\" />
+		<Folder Include="ViewModels\Dialog\" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.4">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.4" />
-    <PackageReference Include="Scrutor" Version="6.0.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+		<PackageReference Include="MaterialDesignColors" Version="5.2.1" />
+		<PackageReference Include="MaterialDesignThemes" Version="5.2.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.4" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.4">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.4" />
+		<PackageReference Include="OpenCvSharp4" Version="4.10.0.20241108" />
+		<PackageReference Include="OpenCvSharp4.runtime.win" Version="4.10.0.20241108" />
+		<PackageReference Include="OpenCvSharp4.WpfExtensions" Version="4.10.0.20241108" />
+		<PackageReference Include="Scrutor" Version="6.0.1" />
+		<PackageReference Include="ViewFaceCore" Version="0.3.8" />
+		<PackageReference Include="ViewFaceCore.all_models" Version="6.0.7" />
+		<PackageReference Include="ViewFaceCore.Extension.ImageSharp" Version="0.3.7" />
+		<PackageReference Include="ViewFaceCore.runtime.win.vc" Version="6.0.0" />
+		<PackageReference Include="ViewFaceCore.runtime.win.x64" Version="6.0.7" />
+	</ItemGroup>
 
 </Project>

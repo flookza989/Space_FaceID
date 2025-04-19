@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Space_FaceID.Data.Context;
 
@@ -10,9 +11,11 @@ using Space_FaceID.Data.Context;
 namespace Space_FaceID.Migrations
 {
     [DbContext(typeof(FaceIDDbContext))]
-    partial class FaceIDDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250419130713_Add FaceDectectionSetting")]
+    partial class AddFaceDectectionSetting
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.4");
@@ -49,37 +52,6 @@ namespace Space_FaceID.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("AuthenticationLogs");
-                });
-
-            modelBuilder.Entity("Space_FaceID.Models.Entities.CameraSetting", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("CameraIndex")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("FrameHeight")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("FrameRate")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("FrameWidth")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime?>("LastUpdated")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CameraSettings");
                 });
 
             modelBuilder.Entity("Space_FaceID.Models.Entities.FaceAuthenticationSetting", b =>

@@ -24,6 +24,8 @@ namespace Space_FaceID.Data.Seed
             await SeedRolePermissions(context);
             await SeedDefaultSettings(context);
             await SeedAdminUser(context);
+            await SeedFaceDetectionSetting(context);
+            await SeedCameraSetting(context);
 
             await context.SaveChangesAsync();
         }
@@ -163,7 +165,7 @@ namespace Space_FaceID.Data.Seed
             if (await context.FaceAuthenticationSettings.AnyAsync())
                 return;
 
-            var settings = new FaceAuthenticationSettings
+            var settings = new FaceAuthenticationSetting
             {
                 MatchThreshold = 0.6f,  // ค่าความเหมือนขั้นต่ำที่ยอมรับได้ (0.6 = 60%)
                 RequireLivenessCheck = true,  // ต้องการการตรวจสอบว่าเป็นใบหน้าจริงไม่ใช่รูปถ่าย
@@ -223,6 +225,39 @@ namespace Space_FaceID.Data.Seed
             };
 
             await context.UserRoles.AddAsync(userRole);
+        }
+
+        private static async Task SeedFaceDetectionSetting(FaceIDDbContext context)
+        {
+            if (await context.FaceDetectionSettings.AnyAsync())
+                return;
+            var settings = new FaceDetectionSetting
+            {
+                FaceSize = 20,  // ขนาดของใบหน้าที่จะตรวจจับ (ในพิกเซล)
+                DetectionThreshold = 0.9f,  // ค่าความไวในการตรวจจับใบหน้า
+                MaxWidth = 2000,  // ความกว้างสูงสุดของภาพที่ใช้ในการตรวจจับ
+                MaxHeight = 2000,  // ความสูงสูงสุดของภาพที่ใช้ในการตรวจจับ
+                IsEnabled = true,
+                LastUpdated = DateTime.Now,
+                UpdatedBy = "System"
+            };
+            await context.FaceDetectionSettings.AddAsync(settings);
+        }
+
+        private static async Task SeedCameraSetting(FaceIDDbContext context)
+        {
+            if (await context.CameraSettings.AnyAsync())
+                return;
+            var settings = new CameraSetting
+            {
+                CameraIndex = 0,  // ดัชนีกล้องที่ใช้ (0 = กล้องหลัก)
+                FrameWidth = 640,  // ความกว้างของภาพ
+                FrameHeight = 480,  // ความสูงของภาพ
+                FrameRate = 24,  // อัตราเฟรมต่อวินาที
+                LastUpdated = DateTime.Now,
+                UpdatedBy = "System"
+            };
+            await context.CameraSettings.AddAsync(settings);
         }
     }
 }

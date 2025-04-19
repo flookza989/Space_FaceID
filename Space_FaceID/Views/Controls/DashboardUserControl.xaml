@@ -1,0 +1,401 @@
+﻿<UserControl
+    x:Class="Space_FaceID.Views.Controls.DashboardUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Space_FaceID.Views.Controls"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Space_FaceID.ViewModels"
+    d:Background="{DynamicResource MaterialDesignPaper}"
+    d:DataContext="{d:DesignInstance Type=vm:DashboardViewModel}"
+    d:DesignWidth="1200"
+    FontFamily="{materialDesign:MaterialDesignFont}"
+    TextElement.FontSize="14"
+    TextElement.FontWeight="Regular"
+    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+    mc:Ignorable="d">
+    <!--  เนื้อหาส่วนหลัก  -->
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!--  ส่วนของแดชบอร์ด  -->
+        <materialDesign:Card
+            Grid.Row="0"
+            Margin="0,0,0,16"
+            Padding="16"
+            Background="{DynamicResource MaterialDesign.Brush.Primary.Light}"
+            Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}">
+            <StackPanel Orientation="Horizontal">
+                <materialDesign:PackIcon
+                    Width="24"
+                    Height="24"
+                    Margin="0,0,10,0"
+                    VerticalAlignment="Center"
+                    Kind="MonitorDashboard" />
+                <TextBlock
+                    VerticalAlignment="Center"
+                    FontSize="22"
+                    FontWeight="Bold"
+                    Text="แดชบอร์ดระบบตรวจจับการเข้า-ออก" />
+            </StackPanel>
+        </materialDesign:Card>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!--  บัตรสรุปจำนวนพนักงานในออฟฟิศ  -->
+            <materialDesign:Card
+                Grid.Row="0"
+                Grid.Column="0"
+                Margin="0,0,8,16"
+                Padding="16">
+                <StackPanel>
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                        <materialDesign:PackIcon
+                            Width="32"
+                            Height="32"
+                            VerticalAlignment="Center"
+                            Foreground="#3F51B5"
+                            Kind="OfficeBuildingMarker" />
+                        <TextBlock
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center"
+                            FontSize="18"
+                            Text="พนักงานในออฟฟิศ" />
+                    </StackPanel>
+                    <TextBlock
+                        Margin="0,8,0,0"
+                        HorizontalAlignment="Center"
+                        FontSize="36"
+                        FontWeight="Bold"
+                        Foreground="#3F51B5"
+                        Text="32 คน" />
+                    <TextBlock
+                        Margin="0,8,0,0"
+                        HorizontalAlignment="Center"
+                        Foreground="#555"
+                        Text="จากทั้งหมด 45 คน (71%)" />
+                    <ProgressBar
+                        Height="8"
+                        Margin="0,8,0,0"
+                        Maximum="100"
+                        Value="71" />
+                </StackPanel>
+            </materialDesign:Card>
+
+            <!--  บัตรสรุปจำนวนการเข้าวันนี้  -->
+            <materialDesign:Card
+                Grid.Row="0"
+                Grid.Column="1"
+                Margin="8,0,8,16"
+                Padding="16">
+                <StackPanel>
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                        <materialDesign:PackIcon
+                            Width="32"
+                            Height="32"
+                            VerticalAlignment="Center"
+                            Foreground="#4CAF50"
+                            Kind="Login" />
+                        <TextBlock
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center"
+                            FontSize="18"
+                            Text="เข้างานวันนี้" />
+                    </StackPanel>
+                    <TextBlock
+                        Margin="0,8,0,0"
+                        HorizontalAlignment="Center"
+                        FontSize="36"
+                        FontWeight="Bold"
+                        Foreground="#4CAF50"
+                        Text="36 คน" />
+                    <TextBlock
+                        Margin="0,8,0,0"
+                        HorizontalAlignment="Center"
+                        Foreground="#555"
+                        Text="เข้าก่อนเวลา 32 คน (89%)" />
+                    <ProgressBar
+                        Height="8"
+                        Margin="0,8,0,0"
+                        Foreground="#4CAF50"
+                        Maximum="100"
+                        Value="89" />
+                </StackPanel>
+            </materialDesign:Card>
+
+            <!--  บัตรสรุปจำนวนการออกวันนี้  -->
+            <materialDesign:Card
+                Grid.Row="0"
+                Grid.Column="2"
+                Margin="8,0,0,16"
+                Padding="16">
+                <StackPanel>
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                        <materialDesign:PackIcon
+                            Width="32"
+                            Height="32"
+                            VerticalAlignment="Center"
+                            Foreground="#F44336"
+                            Kind="Logout" />
+                        <TextBlock
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center"
+                            FontSize="18"
+                            Text="ออกงานวันนี้" />
+                    </StackPanel>
+                    <TextBlock
+                        Margin="0,8,0,0"
+                        HorizontalAlignment="Center"
+                        FontSize="36"
+                        FontWeight="Bold"
+                        Foreground="#F44336"
+                        Text="4 คน" />
+                    <TextBlock
+                        Margin="0,8,0,0"
+                        HorizontalAlignment="Center"
+                        Foreground="#555"
+                        Text="ออกก่อนเวลา 1 คน (25%)" />
+                    <ProgressBar
+                        Height="8"
+                        Margin="0,8,0,0"
+                        Foreground="#F44336"
+                        Maximum="100"
+                        Value="25" />
+                </StackPanel>
+            </materialDesign:Card>
+
+            <!--  ประวัติการเข้าออกล่าสุด  -->
+            <materialDesign:Card
+                Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Margin="0,0,8,0">
+                <DockPanel>
+                    <materialDesign:ColorZone
+                        Padding="16"
+                        DockPanel.Dock="Top"
+                        Mode="PrimaryLight">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon
+                                Width="24"
+                                Height="24"
+                                Margin="0,0,10,0"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}"
+                                Kind="History" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="16"
+                                FontWeight="Medium"
+                                Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}"
+                                Text="ประวัติการเข้าออกล่าสุด" />
+                        </StackPanel>
+                    </materialDesign:ColorZone>
+
+                    <DataGrid
+                        Margin="0,8,0,0"
+                        AutoGenerateColumns="False"
+                        IsReadOnly="True"
+                        VerticalScrollBarVisibility="Auto">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="100"
+                                Binding="{Binding EmployeeId}"
+                                Header="รหัสพนักงาน" />
+                            <DataGridTextColumn
+                                Width="200"
+                                Binding="{Binding EmployeeName}"
+                                Header="ชื่อ-นามสกุล" />
+                            <DataGridTextColumn
+                                Width="150"
+                                Binding="{Binding Department}"
+                                Header="แผนก" />
+                            <DataGridTemplateColumn Width="100" Header="สถานะ">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                                            <Ellipse
+                                                Width="12"
+                                                Height="12"
+                                                Margin="0,0,8,0"
+                                                Fill="{Binding StatusColor}" />
+                                            <TextBlock VerticalAlignment="Center" Text="{Binding Status}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn
+                                Width="100"
+                                Binding="{Binding Time}"
+                                Header="เวลา" />
+                            <DataGridTextColumn
+                                Width="120"
+                                Binding="{Binding Device}"
+                                Header="อุปกรณ์" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </materialDesign:Card>
+
+            <!--  แผงควบคุมการเข้าออกด่วน  -->
+            <materialDesign:Card
+                Grid.Row="1"
+                Grid.Column="2"
+                Margin="8,0,0,0">
+                <DockPanel>
+                    <materialDesign:ColorZone
+                        Padding="16"
+                        DockPanel.Dock="Top"
+                        Mode="PrimaryLight">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon
+                                Width="24"
+                                Height="24"
+                                Margin="0,0,10,0"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}"
+                                Kind="CameraIris" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="16"
+                                FontWeight="Medium"
+                                Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}"
+                                Text="ตรวจจับ Real-time" />
+                        </StackPanel>
+                    </materialDesign:ColorZone>
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!--  พื้นที่แสดงภาพจากกล้อง  -->
+                        <Border
+                            Grid.Row="0"
+                            Margin="16,16,16,8"
+                            Background="#2F2F2F"
+                            CornerRadius="4">
+                            <Grid>
+                                <Image
+                                    x:Name="CameraFeed"
+                                    MinHeight="300"
+                                    Source="{Binding CameraImageSource}"
+                                    Stretch="Uniform" />
+
+                                <!--  กรอบแสดงการตรวจจับใบหน้า/บัตรพนักงาน  -->
+                                <Border
+                                    Width="120"
+                                    Height="120"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    BorderBrush="{DynamicResource PrimaryHueMidBrush}"
+                                    BorderThickness="2"
+                                    Visibility="{Binding IsFaceDetected, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <Border.RenderTransform>
+                                        <ScaleTransform ScaleX="{Binding FaceScaleX}" ScaleY="{Binding FaceScaleY}" />
+                                    </Border.RenderTransform>
+                                </Border>
+
+                                <!--  ข้อความการตรวจจับ  -->
+                                <TextBlock
+                                    Margin="0,0,0,8"
+                                    Padding="8,4"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Bottom"
+                                    Background="#AA000000"
+                                    FontWeight="Bold"
+                                    Foreground="White"
+                                    Text="{Binding DetectionMessage}" />
+                            </Grid>
+                        </Border>
+
+                        <!--  ส่วนแสดงข้อมูลผู้ถูกตรวจจับล่าสุด  -->
+                        <materialDesign:Card
+                            Grid.Row="1"
+                            Margin="16,8,16,8"
+                            Padding="12"
+                            Background="{Binding DetectionBackground}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <!--  รูปพนักงาน  -->
+                                <Border
+                                    Grid.Column="0"
+                                    Width="60"
+                                    Height="60"
+                                    Margin="0,0,12,0"
+                                    CornerRadius="30">
+                                    <Border.Background>
+                                        <ImageBrush ImageSource="{Binding LastDetectedEmployeeImage}" />
+                                    </Border.Background>
+                                </Border>
+
+                                <!--  ข้อมูลพนักงาน  -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock
+                                        FontSize="16"
+                                        FontWeight="Bold"
+                                        Text="{Binding LastDetectedEmployee.Username}" />
+                                    <TextBlock Text="{Binding LastDetectedEmployee.Timestamp}" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock FontWeight="Medium" Text="{Binding LastDetectedStatus}" />
+                                        <TextBlock Text=" " />
+                                        <TextBlock Text="{Binding LastDetectedTime, StringFormat=HH:mm:ss}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </materialDesign:Card>
+
+                        <!--  ปุ่มควบคุม  -->
+                        <StackPanel Grid.Row="2" Margin="16,8,16,16">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Button
+                                    Grid.Column="0"
+                                    Margin="0,0,4,0"
+                                    Command="{Binding ToggleCameraCommand}"
+                                    Content="เปิด/ปิดกล้อง"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}" />
+
+                                <Button
+                                    Grid.Column="1"
+                                    Margin="4,0,0,0"
+                                    Command="{Binding ConfigureDetectionCommand}"
+                                    Content="ตั้งค่าการตรวจจับ"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}" />
+                            </Grid>
+
+                            <Button
+                                Margin="0,8,0,0"
+                                Command="{Binding ManualRecordCommand}"
+                                Content="บันทึกด้วยตนเอง"
+                                Style="{StaticResource MaterialDesignRaisedButton}" />
+                        </StackPanel>
+                    </Grid>
+                </DockPanel>
+            </materialDesign:Card>
+        </Grid>
+    </Grid>
+</UserControl>

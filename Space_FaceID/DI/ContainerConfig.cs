@@ -11,7 +11,7 @@ namespace Space_FaceID.DI
             var assembly = typeof(App).Assembly;
 
             // ลงทะเบียน DbContext
-            services.AddDbContext<FaceIDDbContext>(options =>
+            services.AddDbContextFactory<FaceIDDbContext>(options =>
                 options.UseSqlite("Data Source=faceID.db"));
 
             // Auto register Services and Repositories
@@ -19,7 +19,7 @@ namespace Space_FaceID.DI
                 .FromAssemblies(assembly)
                 .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Service")))
                     .AsImplementedInterfaces()
-                    .WithSingletonLifetime()
+                    .WithScopedLifetime()
                 .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Repository")))
                     .AsImplementedInterfaces()
                     .WithScopedLifetime());
@@ -30,6 +30,20 @@ namespace Space_FaceID.DI
                 .AddClasses(classes => classes.Where(type => type.Name.EndsWith("ViewModel") && !type.IsAbstract))
                     .AsSelf()
                     .WithTransientLifetime());
+
+            // Auto register Windows
+            services.Scan(scan => scan
+                .FromAssemblies(assembly)
+                .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Window") && !type.IsAbstract))
+                    .AsSelf()
+                    .WithTransientLifetime());
+
+            // Auto register UserControls
+            services.Scan(scan => scan
+                .FromAssemblies(assembly)
+                .AddClasses(classes => classes.Where(type => type.Name.EndsWith("UserControl") && !type.IsAbstract))
+                    .AsSelf()
+                    .WithScopedLifetime());
 
             return services;
         }

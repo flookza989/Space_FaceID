@@ -10,11 +10,13 @@ namespace Space_FaceID.Data.Context
     {
         public FaceIDDbContext(DbContextOptions<FaceIDDbContext> options) : base(options) { }
 
+        public DbSet<CameraSetting> CameraSettings { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<UserProfile> UserProfiles { get; set; } // เพิ่มถ้าคุณใช้ UserProfile
+        public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<FaceData> FaceDatas { get; set; }
+        public DbSet<FaceDetectionSetting> FaceDetectionSettings { get; set; }
         public DbSet<AuthenticationLog> AuthenticationLogs { get; set; }
-        public DbSet<FaceAuthenticationSettings> FaceAuthenticationSettings { get; set; }
+        public DbSet<FaceAuthenticationSetting> FaceAuthenticationSettings { get; set; }
         public DbSet<FaceRecognitionModel> FaceRecognitionModels { get; set; }
         public DbSet<SystemAuditLog> SystemAuditLogs { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
@@ -201,11 +203,21 @@ namespace Space_FaceID.Data.Context
                 entity.Property(atl => atl.FailureReason).IsRequired().HasMaxLength(200);
             });
 
-            modelBuilder.Entity<FaceAuthenticationSettings>(entity =>
+            modelBuilder.Entity<FaceAuthenticationSetting>(entity =>
             {
                 entity.Property(fats => fats.MatchThreshold).IsRequired();
                 entity.Property(fats => fats.RequireLivenessCheck).IsRequired();
                 entity.Property(fats => fats.MaxAttempts).IsRequired();
+                entity.Property(fats => fats.IsEnabled).IsRequired();
+                entity.Property(fats => fats.UpdatedBy).IsRequired().HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<FaceDetectionSetting>(entity =>
+            {
+                entity.Property(fats => fats.FaceSize).IsRequired();
+                entity.Property(fats => fats.DetectionThreshold).IsRequired();
+                entity.Property(fats => fats.MaxWidth).IsRequired();
+                entity.Property(fats => fats.MaxHeight).IsRequired();
                 entity.Property(fats => fats.IsEnabled).IsRequired();
                 entity.Property(fats => fats.UpdatedBy).IsRequired().HasMaxLength(50);
             });
@@ -254,7 +266,14 @@ namespace Space_FaceID.Data.Context
                 entity.Property(p => p.Timestamp).IsRequired();
             });
 
-            // ข้อมูลเริ่มต้นสามารถเพิ่มได้ที่นี่ (SeedData method)
+            modelBuilder.Entity<CameraSetting>(entity =>
+            {
+                entity.Property(p => p.CameraIndex).IsRequired();
+                entity.Property(p => p.FrameRate).IsRequired();
+                entity.Property(p => p.FrameWidth).IsRequired();
+                entity.Property(p => p.FrameHeight).IsRequired();
+                entity.Property(p => p.UpdatedBy).IsRequired().HasMaxLength(50);
+            });
         }
     }
 }

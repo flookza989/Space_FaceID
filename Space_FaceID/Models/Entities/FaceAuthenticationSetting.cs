@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Space_FaceID.Models.Entities
 {
-    public class FaceAuthenticationSettings
+    public class FaceAuthenticationSetting
     {
         public int Id { get; set; }
         public float MatchThreshold { get; set; }  // ค่าความเหมือนขั้นต่ำที่ยอมรับได้ (เช่น 0.6)
