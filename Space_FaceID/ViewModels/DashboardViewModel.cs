@@ -14,6 +14,10 @@ using Space_FaceID.Views.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using ViewFaceCore.Configs;
 using ViewFaceCore.Core;
+using System.Xml.Serialization;
+using Space_FaceID.Views.Controls.Dialogs;
+using MaterialDesignThemes.Wpf;
+using Space_FaceID.ViewModels.Dialog;
 
 namespace Space_FaceID.ViewModels
 {
@@ -76,29 +80,60 @@ namespace Space_FaceID.ViewModels
             _cameraService.NewFrameAvailable += OnNewFrameAvailable;
         }
 
+        private async Task StartCamera()
+        {
+            bool success = await _cameraService.StartCameraAsync();
+            IsCameraActive = success;
+            DetectionMessage = success ? "กำลังรอการตรวจจับ..." : "ไม่สามารถเริ่มกล้องได้";
+        }
+
+        public void StopCamera()
+        {
+            _cameraService.StopCamera();
+            IsCameraActive = false;
+            DetectionMessage = "กล้องถูกปิด";
+        }
+
         [RelayCommand]
         private async Task ToggleCameraAsync()
         {
             if (IsCameraActive)
             {
-                _cameraService.StopCamera();
-                IsCameraActive = false;
-                DetectionMessage = "กล้องถูกปิด";
+                StopCamera();
             }
             else
             {
-                bool success = await _cameraService.StartCameraAsync();
-                IsCameraActive = success;
-                DetectionMessage = success ? "กำลังรอการตรวจจับ..." : "ไม่สามารถเริ่มกล้องได้";
+                await StartCamera();
             }
         }
 
         [RelayCommand]
-        private void ConfigureDetection()
+        private async Task ConfigureDetectionAsync()
         {
-            var settingsDialog = _serviceProvider.GetRequiredService<DetectionSettingsWindow>();
-            settingsDialog.Owner = Application.Current.MainWindow;
-            bool? result = settingsDialog.ShowDialog();
+            try
+            {
+                // สร้าง ViewModel สำหรับ Dialog ตั้งค่า
+                var viewModel = _serviceProvider.GetRequiredService<DetectionSettingsDialogViewModel>();
+
+                // สร้าง Dialog View
+                var dialogView = _serviceProvider.GetRequiredService<DetectionSettingsDialogView>();
+
+                // แสดง Dialog และรอผลลัพธ์
+                var result = await DialogHost.Show(dialogView, "RootDialog");
+
+                // ถ้ามีการบันทึกการตั้งค่า (DialogResult == true)
+                if (result is bool dialogResult && dialogResult)
+                {
+                    // รีสตาร์ทกล้องเพื่อใช้การตั้งค่าใหม่
+                    StopCamera();
+                    await Task.Delay(100);
+                    await StartCameraAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"เกิดข้อผิดพลาด: {ex.Message}", "ข้อผิดพลาด", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         [RelayCommand]
@@ -126,6 +161,8 @@ namespace Space_FaceID.ViewModels
         {
             _cameraService.NewFrameAvailable -= OnNewFrameAvailable;
             _cameraService.StopCamera();
+
+            GC.SuppressFinalize(this);
         }
     }
 }

@@ -53,7 +53,7 @@ namespace Space_FaceID.Services.Implementation
             return await _repository.UpdateAsync(entity);
         }
 
-        public virtual async Task<int> UpdateRangeAsync(T entities)
+        public virtual async Task<int> UpdateRangeAsync(IEnumerable<T> entities)
         {
             return await _repository.UpdateRangeAsync(entities);
         }
@@ -63,7 +63,7 @@ namespace Space_FaceID.Services.Implementation
             return await _repository.RemoveAsync(entity);
         }
 
-        public virtual async Task<int> RemoveRangeAsync(T entities)
+        public virtual async Task<int> RemoveRangeAsync(IEnumerable<T> entities)
         {
             return await _repository.RemoveRangeAsync(entities);
         }

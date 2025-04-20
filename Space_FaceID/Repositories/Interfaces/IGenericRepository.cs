@@ -17,9 +17,9 @@ namespace Space_FaceID.Repositories.Interfaces
         Task<int> AddAsync(T entity);
         Task<int> AddRangeAsync(IEnumerable<T> entities);
         Task<int> UpdateAsync(T entity);
-        Task<int> UpdateRangeAsync(T entities);
+        Task<int> UpdateRangeAsync(IEnumerable<T> entities);
         Task<int> RemoveAsync(T entity);
-        Task<int> RemoveRangeAsync(T entities);
+        Task<int> RemoveRangeAsync(IEnumerable<T> entities);
         Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
         Task<int> CountAsync();
         Task<int> CountAsync(Expression<Func<T, bool>> predicate);

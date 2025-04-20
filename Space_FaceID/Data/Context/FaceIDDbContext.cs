@@ -15,9 +15,9 @@ namespace Space_FaceID.Data.Context
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<FaceData> FaceDatas { get; set; }
         public DbSet<FaceDetectionSetting> FaceDetectionSettings { get; set; }
+        public DbSet<FaceRecognizeSetting> FaceRecognizeSettings { get; set; }
         public DbSet<AuthenticationLog> AuthenticationLogs { get; set; }
         public DbSet<FaceAuthenticationSetting> FaceAuthenticationSettings { get; set; }
-        public DbSet<FaceRecognitionModel> FaceRecognitionModels { get; set; }
         public DbSet<SystemAuditLog> SystemAuditLogs { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<Role> Roles { get; set; }
@@ -215,20 +215,21 @@ namespace Space_FaceID.Data.Context
             modelBuilder.Entity<FaceDetectionSetting>(entity =>
             {
                 entity.Property(fats => fats.FaceSize).IsRequired();
-                entity.Property(fats => fats.DetectionThreshold).IsRequired();
+                entity.Property(fats => fats.DetectionThreshold).HasPrecision(10, 2).IsRequired();
                 entity.Property(fats => fats.MaxWidth).IsRequired();
                 entity.Property(fats => fats.MaxHeight).IsRequired();
                 entity.Property(fats => fats.IsEnabled).IsRequired();
                 entity.Property(fats => fats.UpdatedBy).IsRequired().HasMaxLength(50);
             });
 
-            modelBuilder.Entity<FaceRecognitionModel>(entity =>
+            modelBuilder.Entity<FaceRecognizeSetting>(entity =>
             {
-                entity.Property(frm => frm.ModelName).IsRequired();
-                entity.Property(frm => frm.ModelVersion).IsRequired();
-                entity.Property(frm => frm.IsActive).IsRequired();
-                entity.Property(frm => frm.CreatedAt).IsRequired();
-                entity.Property(frm => frm.CreatedBy).IsRequired().HasMaxLength(50);
+                entity.Property(fats => fats.Name).IsRequired();
+                entity.Property(fats => fats.RecognizeThreshold).HasPrecision(10, 2).IsRequired();
+                entity.Property(fats => fats.LandmarkType).IsRequired();
+                entity.Property(fats => fats.RecognizerType).IsRequired();
+                entity.Property(fats => fats.IsEnabled).IsRequired();
+                entity.Property(fats => fats.UpdatedBy).IsRequired().HasMaxLength(50);
             });
 
             modelBuilder.Entity<Role>(entity =>

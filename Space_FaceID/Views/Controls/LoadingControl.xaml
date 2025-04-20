@@ -12,7 +12,7 @@
     <Grid
         Panel.ZIndex="9999"
         Background="#80000000"
-        Visibility="{Binding IsLoading, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVisibilityConverter}}">
+        Visibility="{Binding IsLoading, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BooleanToVisibilityConverter}}">
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock
                 Margin="0,0,0,10"

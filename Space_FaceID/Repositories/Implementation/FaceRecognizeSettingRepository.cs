@@ -10,20 +10,19 @@ using System.Threading.Tasks;
 
 namespace Space_FaceID.Repositories.Implementation
 {
-    public class CameraSettingRepository : GenericRepository<CameraSetting>, ICameraSettingRepository
+    public class FaceRecognizeSettingRepository : GenericRepository<FaceRecognizeSetting>, IFaceRecognizeSettingRepository
     {
         private readonly IDbContextFactory<FaceIDDbContext> _contextFactory;
-        public CameraSettingRepository(IDbContextFactory<FaceIDDbContext> contextFactory) : base(contextFactory)
+        public FaceRecognizeSettingRepository(IDbContextFactory<FaceIDDbContext> contextFactory) : base(contextFactory)
         {
             _contextFactory = contextFactory;
         }
-
-        public async Task<CameraSetting?> GetActiveCameraSettingAsync()
+        public async Task<FaceRecognizeSetting?> GetActiveFaceRecognizeSettingAsync()
         {
             using var context = _contextFactory.CreateDbContext();
-            var activeSetting = await context.CameraSettings
+            var activeSetting = await context.FaceRecognizeSettings
                 .OrderBy(x => x.Id)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(x => x.IsEnabled);
             return activeSetting;
         }
     }

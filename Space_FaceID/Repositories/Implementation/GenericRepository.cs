@@ -65,7 +65,7 @@ namespace Space_FaceID.Repositories.Implementation
             return await context.SaveChangesAsync();
         }
 
-        public virtual async Task<int> UpdateRangeAsync(T entities)
+        public virtual async Task<int> UpdateRangeAsync(IEnumerable<T> entities)
         {
             using var context = _contextFactory.CreateDbContext();
             context.Set<T>().UpdateRange(entities);
@@ -79,7 +79,7 @@ namespace Space_FaceID.Repositories.Implementation
             return await context.SaveChangesAsync();
         }
 
-        public virtual async Task<int> RemoveRangeAsync(T entities)
+        public virtual async Task<int> RemoveRangeAsync(IEnumerable<T> entities)
         {
             using var context = _contextFactory.CreateDbContext();
             context.Set<T>().RemoveRange(entities);

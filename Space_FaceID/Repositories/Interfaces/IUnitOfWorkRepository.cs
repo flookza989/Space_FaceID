@@ -12,5 +12,9 @@ namespace Space_FaceID.Repositories.Interfaces
     {
         ICameraSettingRepository CameraSettingRepository { get; }
         IFaceDetectionSettingRepository FaceDetectionSettingRepository { get; }
+        IFaceRecognizeSettingRepository FaceRecognizeSettingRepository { get; }
+        IFaceDataRepository FaceDataRepository { get; }
+        IUserProfileRepository UserProfileRepository { get; }
+        IUserRepository UserRepository { get; }
     }
 }

@@ -16,7 +16,11 @@
             </ResourceDictionary.MergedDictionaries>
 
             <converters:VisualToImageSourceConverter x:Key="VisualToImageSourceConverter" />
-            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converters:InvertedBooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter" />
+            <converters:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter" />
+            <converters:BooleanToColorConverter x:Key="BooleanToColorConverter" />
+            <converters:BooleanToTextActiveConverter x:Key="BooleanToTextActiveConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

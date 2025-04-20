@@ -19,15 +19,29 @@ namespace Space_FaceID.DI
                 .FromAssemblies(assembly)
                 .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Service")))
                     .AsImplementedInterfaces()
-                    .WithScopedLifetime()
+                    .WithSingletonLifetime()
                 .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Repository")))
                     .AsImplementedInterfaces()
-                    .WithScopedLifetime());
+                    .WithSingletonLifetime());
 
             // Auto register ViewModels
             services.Scan(scan => scan
                 .FromAssemblies(assembly)
                 .AddClasses(classes => classes.Where(type => type.Name.EndsWith("ViewModel") && !type.IsAbstract))
+                    .AsSelf()
+                    .WithScopedLifetime());
+
+            // Auto register Dialog Views
+            services.Scan(scan => scan
+                .FromAssemblies(assembly)
+                .AddClasses(classes => classes.Where(type => type.Name.EndsWith("DialogViewModel") && !type.IsAbstract))
+                    .AsSelf()
+                    .WithTransientLifetime());
+
+            // Auto register Dialog Views
+            services.Scan(scan => scan
+                .FromAssemblies(assembly)
+                .AddClasses(classes => classes.Where(type => type.Name.EndsWith("DialogView") && !type.IsAbstract))
                     .AsSelf()
                     .WithTransientLifetime());
 

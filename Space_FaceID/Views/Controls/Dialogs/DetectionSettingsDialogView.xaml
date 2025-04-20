@@ -1,0 +1,346 @@
+﻿<UserControl
+    x:Class="Space_FaceID.Views.Controls.Dialogs.DetectionSettingsDialogView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Space_FaceID.Views.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Space_FaceID.Views.Controls.Dialogs"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Space_FaceID.ViewModels.Dialog"
+    x:Name="DetectionSettingsControl"
+    Width="800"
+    d:DataContext="{d:DesignInstance Type=vm:DetectionSettingsDialogViewModel}"
+    FontFamily="{materialDesign:MaterialDesignFont}"
+    TextElement.FontSize="14"
+    TextElement.FontWeight="Regular"
+    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+    mc:Ignorable="d">
+
+    <materialDesign:DialogHost CloseOnClickAway="False" DialogTheme="Inherit">
+        <materialDesign:Card>
+            <Grid x:Name="MainGrid">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!--  Loading Indicator  -->
+                <controls:LoadingControl
+                    x:Name="LoadingControl"
+                    Grid.Row="0"
+                    Grid.RowSpan="3"
+                    Panel.ZIndex="9999"
+                    IsLoading="{Binding IsLoading}"
+                    LoadingMessage="{Binding LoadingMessage}" />
+
+                <!--  หัวข้อ  -->
+                <materialDesign:ColorZone
+                    x:Name="HeaderZone"
+                    Grid.Row="0"
+                    Padding="16"
+                    Mode="PrimaryMid">
+                    <StackPanel x:Name="HeaderPanel" Orientation="Horizontal">
+                        <materialDesign:PackIcon
+                            x:Name="HeaderIcon"
+                            Width="24"
+                            Height="24"
+                            Margin="0,0,8,0"
+                            VerticalAlignment="Center"
+                            Kind="Settings" />
+                        <TextBlock
+                            x:Name="HeaderText"
+                            VerticalAlignment="Center"
+                            FontSize="18"
+                            FontWeight="Medium"
+                            Text="ตั้งค่ากล้องและการตรวจจับใบหน้า" />
+                    </StackPanel>
+                </materialDesign:ColorZone>
+
+                <materialDesign:Card Grid.Row="1" Padding="16">
+                    <StackPanel>
+                        <!--  เนื้อหาหลัก  -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="5*" />
+                                <ColumnDefinition Width="5*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!--  กลุ่มการตั้งค่ากล้อง  -->
+                            <materialDesign:Card Grid.Column="0" Margin="0,0,8,0">
+                                <DockPanel>
+                                    <materialDesign:ColorZone
+                                        x:Name="CameraSettingsHeader"
+                                        Padding="16"
+                                        DockPanel.Dock="Top"
+                                        Mode="PrimaryLight">
+                                        <StackPanel x:Name="CameraSettingsHeaderPanel" Orientation="Horizontal">
+                                            <materialDesign:PackIcon
+                                                x:Name="CameraSettingsIcon"
+                                                Width="24"
+                                                Height="24"
+                                                Margin="0,0,10,0"
+                                                VerticalAlignment="Center"
+                                                Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}"
+                                                Kind="Camera" />
+                                            <TextBlock
+                                                x:Name="CameraSettingsTitle"
+                                                VerticalAlignment="Center"
+                                                FontSize="16"
+                                                FontWeight="Medium"
+                                                Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}"
+                                                Text="ตั้งค่ากล้อง" />
+                                        </StackPanel>
+                                    </materialDesign:ColorZone>
+                                    <materialDesign:Card x:Name="CameraSettingsContent" Padding="16">
+                                        <StackPanel x:Name="CameraSettingsPanel">
+                                            <!--  เลือกกล้อง  -->
+                                            <TextBlock
+                                                x:Name="CameraLabel"
+                                                VerticalAlignment="Center"
+                                                Text="กล้อง: " />
+                                            <ComboBox
+                                                x:Name="CameraSelector"
+                                                Margin="0,8,0,8"
+                                                materialDesign:HintAssist.Hint="เลือกกล้อง"
+                                                ItemsSource="{Binding Cameras}"
+                                                SelectedItem="{Binding SelectedCamera}" />
+
+                                            <!--  ความละเอียดกล้อง  -->
+                                            <TextBlock
+                                                x:Name="ResolutionLabel"
+                                                VerticalAlignment="Center"
+                                                Text="ความละเอียด: " />
+                                            <ComboBox
+                                                x:Name="ResolutionSelector"
+                                                Margin="0,8,0,8"
+                                                materialDesign:HintAssist.Hint="ความละเอียด"
+                                                ItemsSource="{Binding Resolutions}"
+                                                SelectedItem="{Binding SelectedResolution}" />
+
+                                            <!--  จำนวนเฟรมต่อวินาที (FPS)  -->
+                                            <StackPanel
+                                                x:Name="FpsPanel"
+                                                Margin="0,8,0,8"
+                                                Orientation="Horizontal">
+                                                <TextBlock
+                                                    x:Name="FpsLabel"
+                                                    VerticalAlignment="Center"
+                                                    Text="จำนวนเฟรมต่อวินาที (FPS): " />
+                                                <TextBlock
+                                                    x:Name="FpsValue"
+                                                    Margin="8,0,0,0"
+                                                    VerticalAlignment="Center"
+                                                    FontWeight="Medium"
+                                                    Text="{Binding FpsValue, StringFormat='{}{0:F0}'}" />
+                                            </StackPanel>
+                                            <Slider
+                                                x:Name="FpsSlider"
+                                                IsSnapToTickEnabled="True"
+                                                Maximum="60"
+                                                Minimum="5"
+                                                TickFrequency="1"
+                                                Value="{Binding FpsValue}" />
+                                        </StackPanel>
+                                    </materialDesign:Card>
+                                </DockPanel>
+                            </materialDesign:Card>
+
+
+                            <!--  กลุ่มการตั้งค่าการตรวจจับใบหน้า  -->
+                            <materialDesign:Card Grid.Column="1" Margin="8,0,0,0">
+                                <DockPanel>
+                                    <materialDesign:ColorZone
+                                        x:Name="FaceDetectionSettingsHeader"
+                                        Padding="16"
+                                        DockPanel.Dock="Top"
+                                        Mode="PrimaryLight">
+                                        <StackPanel x:Name="FaceDetectionSettingsHeaderPanel" Orientation="Horizontal">
+                                            <materialDesign:PackIcon
+                                                x:Name="FaceDetectionSettingsIcon"
+                                                Width="24"
+                                                Height="24"
+                                                Margin="0,0,10,0"
+                                                VerticalAlignment="Center"
+                                                Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}"
+                                                Kind="FaceAgent" />
+                                            <TextBlock
+                                                x:Name="FaceDetectionSettingsTitle"
+                                                VerticalAlignment="Center"
+                                                FontSize="16"
+                                                FontWeight="Medium"
+                                                Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}"
+                                                Text="ตั้งค่าการตรวจจับใบหน้า" />
+                                        </StackPanel>
+                                    </materialDesign:ColorZone>
+                                    <materialDesign:Card x:Name="FaceDetectionSettingsContent" Padding="16">
+                                        <StackPanel x:Name="FaceDetectionSettingsPanel">
+                                            <!--  เปิดใช้งานการตรวจจับใบหน้า  -->
+                                            <CheckBox
+                                                x:Name="FaceDetectionEnabledCheckbox"
+                                                Margin="0,8"
+                                                Content="เปิดใช้งานการตรวจจับใบหน้า"
+                                                IsChecked="{Binding IsFaceDetectionEnabled}" />
+
+                                            <!--  เลือกกล้อง  -->
+                                            <TextBlock
+                                                x:Name="FaceTypeLabel"
+                                                VerticalAlignment="Center"
+                                                Text="ประเภทการตรวจจับใบหน้า: " />
+                                            <ComboBox
+                                                x:Name="FaceTypeSelector"
+                                                Margin="0,8,0,8"
+                                                materialDesign:HintAssist.Hint="เลือกประเภท"
+                                                ItemsSource="{Binding FaceTypes}"
+                                                SelectedItem="{Binding SelectedFaceType}" />
+
+                                            <!--  ขนาดใบหน้าขั้นต่ำ  -->
+                                            <StackPanel
+                                                x:Name="FaceSizePanel"
+                                                Margin="0,8,0,8"
+                                                Orientation="Horizontal">
+                                                <TextBlock
+                                                    x:Name="FaceSizeLabel"
+                                                    VerticalAlignment="Center"
+                                                    Text="ขนาดใบหน้าขั้นต่ำ: " />
+                                                <TextBlock
+                                                    x:Name="FaceSizeValue"
+                                                    Margin="8,0,0,0"
+                                                    VerticalAlignment="Center"
+                                                    FontWeight="Medium">
+                                                    <Run Text="{Binding FaceSizeValue}" />
+                                                    <Run Text="px" />
+                                                </TextBlock>
+                                            </StackPanel>
+                                            <Slider
+                                                x:Name="FaceSizeSlider"
+                                                IsSnapToTickEnabled="True"
+                                                Maximum="200"
+                                                Minimum="20"
+                                                TickFrequency="1"
+                                                Value="{Binding FaceSizeValue}" />
+
+                                            <!--  ค่าความเชื่อมั่นขั้นต่ำ  -->
+                                            <StackPanel
+                                                x:Name="ThresholdPanel"
+                                                Margin="0,8,0,8"
+                                                Orientation="Horizontal">
+                                                <TextBlock
+                                                    x:Name="ThresholdLabel"
+                                                    VerticalAlignment="Center"
+                                                    Text="ค่าความเชื่อมั่นขั้นต่ำ: " />
+                                                <TextBlock
+                                                    x:Name="ThresholdValue"
+                                                    Margin="8,0,0,0"
+                                                    VerticalAlignment="Center"
+                                                    FontWeight="Medium">
+                                                    <Run Text="{Binding DetectionThresholdValue}" />
+                                                    <Run Text="%" />
+                                                </TextBlock>
+                                            </StackPanel>
+                                            <Slider
+                                                x:Name="ThresholdSlider"
+                                                IsSnapToTickEnabled="True"
+                                                Maximum="100"
+                                                Minimum="10"
+                                                TickFrequency="1"
+                                                Value="{Binding DetectionThresholdValue}" />
+
+                                            <!--  ความกว้างสูงสุดของภาพที่จะประมวลผล  -->
+                                            <StackPanel
+                                                x:Name="MaxWidthPanel"
+                                                Margin="0,8,0,8"
+                                                Orientation="Horizontal">
+                                                <TextBlock
+                                                    x:Name="MaxWidthLabel"
+                                                    VerticalAlignment="Center"
+                                                    Text="ความกว้างสูงสุดของภาพที่จะประมวลผล: " />
+                                                <TextBlock
+                                                    x:Name="MaxWidthValue"
+                                                    Margin="8,0,0,0"
+                                                    VerticalAlignment="Center"
+                                                    FontWeight="Medium">
+                                                    <Run Text="{Binding MaxWidthValue}" />
+                                                    <Run Text="px" />
+                                                </TextBlock>
+                                            </StackPanel>
+                                            <Slider
+                                                x:Name="MaxWidthSlider"
+                                                IsSnapToTickEnabled="True"
+                                                Maximum="4000"
+                                                Minimum="100"
+                                                TickFrequency="10"
+                                                Value="{Binding MaxWidthValue}" />
+
+                                            <!--  ความสูงสูงสุดของภาพที่จะประมวลผล  -->
+                                            <StackPanel
+                                                x:Name="MaxHeightPanel"
+                                                Margin="0,8,0,8"
+                                                Orientation="Horizontal">
+                                                <TextBlock
+                                                    x:Name="MaxHeightLabel"
+                                                    VerticalAlignment="Center"
+                                                    Text="ความสูงสูงสุดของภาพที่จะประมวลผล: " />
+                                                <TextBlock
+                                                    x:Name="MaxHeightValue"
+                                                    Margin="8,0,0,0"
+                                                    VerticalAlignment="Center"
+                                                    FontWeight="Medium">
+                                                    <Run Text="{Binding MaxHeightValue}" />
+                                                    <Run Text="px" />
+                                                </TextBlock>
+                                            </StackPanel>
+                                            <Slider
+                                                x:Name="MaxHeightSlider"
+                                                IsSnapToTickEnabled="True"
+                                                Maximum="4000"
+                                                Minimum="100"
+                                                TickFrequency="10"
+                                                Value="{Binding MaxHeightValue}" />
+                                        </StackPanel>
+                                    </materialDesign:Card>
+                                </DockPanel>
+                            </materialDesign:Card>
+
+                        </Grid>
+
+                        <!--  ปุ่มด้านล่าง  -->
+                        <StackPanel
+                            x:Name="ButtonsPanel"
+                            Grid.Row="2"
+                            Margin="0,16,0,0"
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal">
+                            <Button
+                                x:Name="ResetButton"
+                                Margin="0,0,8,0"
+                                Command="{Binding ResetCommand}"
+                                Content="รีเซ็ตค่าเริ่มต้น"
+                                Style="{StaticResource MaterialDesignOutlinedButton}" />
+                            <Button
+                                x:Name="CancelButton"
+                                Margin="0,0,8,0"
+                                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                Content="ยกเลิก"
+                                IsCancel="True"
+                                Style="{StaticResource MaterialDesignOutlinedButton}">
+                                <Button.CommandParameter>
+                                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">False</system:Boolean>
+                                </Button.CommandParameter>
+                            </Button>
+                            <Button
+                                x:Name="SaveButton"
+                                Margin="0,0,0,0"
+                                Command="{Binding SaveCommand}"
+                                Content="บันทึก"
+                                IsDefault="True"
+                                IsEnabled="{Binding IsDataChanged}"
+                                Style="{StaticResource MaterialDesignRaisedButton}" />
+                        </StackPanel>
+                    </StackPanel>
+                </materialDesign:Card>
+
+            </Grid>
+        </materialDesign:Card>
+    </materialDesign:DialogHost>
+</UserControl>

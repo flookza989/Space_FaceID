@@ -1,0 +1,226 @@
+<UserControl
+    x:Class="Space_FaceID.Views.Controls.Dialogs.UserEditDialogView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Space_FaceID.Views.Controls.Dialogs"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Space_FaceID.ViewModels.Dialog"
+    Width="800"
+    d:DataContext="{d:DesignInstance Type=vm:UserEditDialogViewModel}"
+    mc:Ignorable="d">
+
+    <materialDesign:DialogHost CloseOnClickAway="False" DialogTheme="Inherit">
+        <materialDesign:Card>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!--  หัวข้อ  -->
+                <materialDesign:ColorZone
+                    Grid.Row="0"
+                    Padding="16"
+                    Mode="PrimaryMid">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon
+                            Width="24"
+                            Height="24"
+                            Margin="0,0,8,0"
+                            VerticalAlignment="Center"
+                            Kind="AccountEdit" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="18"
+                            FontWeight="Medium"
+                            Text="{Binding DialogTitle}" />
+                    </StackPanel>
+                </materialDesign:ColorZone>
+
+                <materialDesign:Card Grid.Row="1" Padding="16">
+                    <StackPanel>
+                        <!--  เนื้อหา  -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!--  รูปโปรไฟล์  -->
+                            <StackPanel Grid.Column="0" Margin="0,0,24,0">
+                                <Border
+                                    Width="150"
+                                    Height="150"
+                                    Margin="0,0,0,16"
+                                    Background="#EEEEEE"
+                                    BorderBrush="#DDDDDD"
+                                    BorderThickness="1"
+                                    CornerRadius="75">
+                                    <Grid>
+                                        <materialDesign:PackIcon
+                                            Width="100"
+                                            Height="100"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Foreground="#BBBBBB"
+                                            Kind="AccountCircle"
+                                            Visibility="{Binding ProfileImage, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" />
+                                        <Border
+                                            Width="150"
+                                            Height="150"
+                                            CornerRadius="75"
+                                            Visibility="{Binding ProfileImage, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <Border.Background>
+                                                <ImageBrush ImageSource="{Binding ProfileImage}" Stretch="UniformToFill" />
+                                            </Border.Background>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+
+                                <Button
+                                    Margin="0,0,0,8"
+                                    Command="{Binding BrowseImageCommand}"
+                                    Content="เลือกรูปภาพ"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}" />
+
+                                <Button
+                                    Command="{Binding RemoveImageCommand}"
+                                    Content="ลบรูปภาพ"
+                                    IsEnabled="{Binding ProfileImage, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}" />
+                            </StackPanel>
+
+                            <!--  แบบฟอร์ม  -->
+                            <StackPanel Grid.Column="1" Margin="0,0,8,0">
+                                <TextBlock
+                                    Margin="0,0,0,16"
+                                    FontSize="16"
+                                    FontWeight="Medium"
+                                    Text="ข้อมูลพื้นฐาน" />
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <!--  ชื่อ-นามสกุล  -->
+                                    <TextBox
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        Margin="0,0,8,16"
+                                        materialDesign:HintAssist.Hint="ชื่อ"
+                                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                        Text="{Binding FirstName}" />
+
+                                    <TextBox
+                                        Grid.Row="0"
+                                        Grid.Column="1"
+                                        Margin="0,0,0,16"
+                                        materialDesign:HintAssist.Hint="นามสกุล"
+                                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                        Text="{Binding LastName}" />
+
+                                    <!--  อีเมล-เบอร์โทร  -->
+                                    <TextBox
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        Margin="0,0,8,16"
+                                        materialDesign:HintAssist.Hint="อีเมล"
+                                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                        Text="{Binding Email}" />
+
+                                    <TextBox
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        Margin="0,0,0,16"
+                                        materialDesign:HintAssist.Hint="เบอร์โทรศัพท์"
+                                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                        Text="{Binding PhoneNumber}" />
+
+                                    <!--  วันเกิด-เพศ  -->
+                                    <DatePicker
+                                        Grid.Row="2"
+                                        Grid.Column="0"
+                                        Margin="0,0,8,16"
+                                        materialDesign:HintAssist.Hint="วันเกิด"
+                                        Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                                        Text="{Binding DateOfBirth, StringFormat=dd/MM/yyyy}" />
+
+                                    <ComboBox
+                                        Grid.Row="2"
+                                        Grid.Column="1"
+                                        Margin="0,0,0,16"
+                                        materialDesign:HintAssist.Hint="เพศ"
+                                        ItemsSource="{Binding GenderOptions}"
+                                        SelectedItem="{Binding Gender}"
+                                        Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+
+                                    <!--  สถานะการใช้งาน  -->
+                                    <StackPanel
+                                        Grid.Row="3"
+                                        Grid.Column="0"
+                                        Margin="0,0,0,16"
+                                        Orientation="Horizontal">
+                                        <CheckBox
+                                            VerticalAlignment="Center"
+                                            Content="เปิดใช้งานบัญชี"
+                                            IsChecked="{Binding IsActive}" />
+                                    </StackPanel>
+
+                                    <!--  ที่อยู่  -->
+                                    <TextBox
+                                        Grid.Row="4"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="2"
+                                        Margin="0,0,0,16"
+                                        materialDesign:HintAssist.Hint="ที่อยู่"
+                                        AcceptsReturn="True"
+                                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                        Text="{Binding Address}"
+                                        TextWrapping="Wrap"
+                                        VerticalScrollBarVisibility="Auto" />
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+
+                        <!--  ปุ่มดำเนินการ  -->
+                        <StackPanel
+                            Grid.Row="2"
+                            Margin="0,16,0,0"
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal">
+                            <Button
+                                Margin="0,0,8,0"
+                                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                Content="ยกเลิก"
+                                IsCancel="True"
+                                Style="{StaticResource MaterialDesignOutlinedButton}" />
+                            <Button
+                                Command="{Binding SaveCommand}"
+                                Content="บันทึก"
+                                IsDefault="True"
+                                Style="{StaticResource MaterialDesignRaisedButton}">
+                                <Button.CommandParameter>
+                                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">True</system:Boolean>
+                                </Button.CommandParameter>
+                            </Button>
+                        </StackPanel>
+
+                    </StackPanel>
+
+                </materialDesign:Card>
+            </Grid>
+        </materialDesign:Card>
+    </materialDesign:DialogHost>
+</UserControl>

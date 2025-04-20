@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Space FaceID - ระบบยืนยันตัวตนด้วยใบหน้า"
     Width="1200"
+    MinHeight="1000"
     Background="{DynamicResource MaterialDesignPaper}"
     FontFamily="{materialDesign:MaterialDesignFont}"
     SizeToContent="Height"

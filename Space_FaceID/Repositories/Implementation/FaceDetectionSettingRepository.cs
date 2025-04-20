@@ -20,10 +20,10 @@ namespace Space_FaceID.Repositories.Implementation
 
         public async Task<FaceDetectionSetting?> GetActiveFaceDetectionSettingAsync()
         {
-            var context = _contextFactory.CreateDbContext();
+            using var context = _contextFactory.CreateDbContext();
             var activeSetting = await context.FaceDetectionSettings
                 .OrderBy(x => x.Id)
-                .FirstOrDefaultAsync(s => s.IsEnabled);
+                .FirstOrDefaultAsync();
             return activeSetting;
         }
     }

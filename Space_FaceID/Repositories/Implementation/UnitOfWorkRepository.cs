@@ -15,10 +15,32 @@ namespace Space_FaceID.Repositories.Implementation
 
         private readonly IFaceDetectionSettingRepository _faceDetectionSettingRepository;
         public IFaceDetectionSettingRepository FaceDetectionSettingRepository => _faceDetectionSettingRepository;
-        public UnitOfWorkRepository(ICameraSettingRepository cameraSettingRepository, IFaceDetectionSettingRepository faceDetectionSettingRepository)
+
+        private readonly IFaceRecognizeSettingRepository _faceRecognizeSettingRepository;
+        public IFaceRecognizeSettingRepository FaceRecognizeSettingRepository => _faceRecognizeSettingRepository;
+
+        private readonly IFaceDataRepository _faceDataRepository;
+        public IFaceDataRepository FaceDataRepository => _faceDataRepository;
+
+        private readonly IUserProfileRepository _userProfileRepository;
+        public IUserProfileRepository UserProfileRepository => _userProfileRepository;
+
+        private readonly IUserRepository _userRepository;
+        public IUserRepository UserRepository => _userRepository;
+
+        public UnitOfWorkRepository(ICameraSettingRepository cameraSettingRepository,
+            IFaceDetectionSettingRepository faceDetectionSettingRepository,
+            IFaceRecognizeSettingRepository faceRecognizeSettingRepository,
+            IFaceDataRepository faceDataRepository,
+            IUserProfileRepository userProfileRepository,
+            IUserRepository userRepository)
         {
-            _cameraSettingRepository = cameraSettingRepository;
-            _faceDetectionSettingRepository = faceDetectionSettingRepository;
+            _cameraSettingRepository = cameraSettingRepository ?? throw new ArgumentNullException(nameof(cameraSettingRepository));
+            _faceDetectionSettingRepository = faceDetectionSettingRepository ?? throw new ArgumentNullException(nameof(faceDetectionSettingRepository));
+            _faceRecognizeSettingRepository = faceRecognizeSettingRepository ?? throw new ArgumentNullException(nameof(faceRecognizeSettingRepository));
+            _faceDataRepository = faceDataRepository ?? throw new ArgumentNullException(nameof(faceDataRepository));
+            _userProfileRepository = userProfileRepository ?? throw new ArgumentNullException(nameof(userProfileRepository));
+            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         }
 
 

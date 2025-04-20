@@ -1,0 +1,573 @@
+﻿<UserControl
+    x:Class="Space_FaceID.Views.Controls.EmployeeUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Space_FaceID.Views.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Space_FaceID.Views.Controls"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Space_FaceID.ViewModels"
+    x:Name="EmployeeControl"
+    d:Background="{DynamicResource MaterialDesignPaper}"
+    d:DataContext="{d:DesignInstance Type=vm:EmployeeViewModel}"
+    d:DesignWidth="1200"
+    FontFamily="{materialDesign:MaterialDesignFont}"
+    TextElement.FontSize="14"
+    TextElement.FontWeight="Regular"
+    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+    mc:Ignorable="d">
+
+    <Grid x:Name="MainGrid" Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!--  Loading Indicator  -->
+        <controls:LoadingControl
+            x:Name="LoadingControl"
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Panel.ZIndex="9999"
+            IsLoading="{Binding IsLoading}"
+            LoadingMessage="{Binding LoadingMessage}" />
+
+        <!--  หัวข้อหน้า  -->
+        <materialDesign:Card
+            x:Name="HeaderCard"
+            Grid.Row="0"
+            Margin="0,0,0,16"
+            Padding="16"
+            Background="{DynamicResource MaterialDesign.Brush.Primary.Light}"
+            Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}">
+            <StackPanel x:Name="HeaderPanel" Orientation="Horizontal">
+                <materialDesign:PackIcon
+                    x:Name="HeaderIcon"
+                    Width="24"
+                    Height="24"
+                    Margin="0,0,10,0"
+                    VerticalAlignment="Center"
+                    Kind="AccountMultiple" />
+                <TextBlock
+                    x:Name="HeaderText"
+                    VerticalAlignment="Center"
+                    FontSize="22"
+                    FontWeight="Bold"
+                    Text="ข้อมูลพนักงาน" />
+            </StackPanel>
+        </materialDesign:Card>
+
+        <!--  เนื้อหาหลัก  -->
+        <Grid x:Name="ContentGrid" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="350" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!--  ส่วนรายชื่อพนักงาน  -->
+            <materialDesign:Card
+                x:Name="EmployeeListCard"
+                Grid.Column="0"
+                Margin="0,0,16,0">
+                <DockPanel x:Name="EmployeeListPanel">
+                    <materialDesign:ColorZone
+                        x:Name="EmployeeListHeader"
+                        Padding="16"
+                        DockPanel.Dock="Top"
+                        Mode="PrimaryLight">
+                        <StackPanel x:Name="EmployeeListHeaderPanel" Orientation="Horizontal">
+                            <materialDesign:PackIcon
+                                x:Name="EmployeeListIcon"
+                                Width="24"
+                                Height="24"
+                                Margin="0,0,10,0"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}"
+                                Kind="AccountGroup" />
+                            <TextBlock
+                                x:Name="EmployeeListTitle"
+                                VerticalAlignment="Center"
+                                FontSize="16"
+                                FontWeight="Medium"
+                                Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}"
+                                Text="รายชื่อพนักงาน" />
+                        </StackPanel>
+                    </materialDesign:ColorZone>
+
+                    <!--  แถบค้นหา  -->
+                    <Grid
+                        x:Name="SearchGrid"
+                        Margin="16,16,16,0"
+                        DockPanel.Dock="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox
+                            x:Name="SearchBox"
+                            Margin="0,0,8,0"
+                            materialDesign:HintAssist.Hint="ค้นหาพนักงาน..."
+                            Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button
+                            x:Name="RefreshButton"
+                            Grid.Column="1"
+                            Command="{Binding RefreshCommand}"
+                            Style="{StaticResource MaterialDesignIconButton}"
+                            ToolTip="รีเฟรชข้อมูล">
+                            <materialDesign:PackIcon Kind="Refresh" />
+                        </Button>
+                    </Grid>
+
+                    <!--  รายการพนักงาน  -->
+                    <ListView
+                        x:Name="EmployeesListView"
+                        Margin="0,16,0,0"
+                        ItemsSource="{Binding Employees}"
+                        SelectedItem="{Binding SelectedEmployee}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid x:Name="EmployeeItemGrid" Margin="8,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!--  ไอคอนผู้ใช้  -->
+                                    <materialDesign:PackIcon
+                                        x:Name="EmployeeItemIcon"
+                                        Width="24"
+                                        Height="24"
+                                        Margin="0,0,8,0"
+                                        Kind="Account" />
+
+                                    <!--  ข้อมูลพนักงาน  -->
+                                    <StackPanel x:Name="EmployeeItemInfo" Grid.Column="1">
+                                        <TextBlock
+                                            x:Name="EmployeeItemName"
+                                            FontWeight="Medium"
+                                            Text="{Binding Username}" />
+                                        <TextBlock
+                                            x:Name="EmployeeItemEmail"
+                                            Foreground="#555"
+                                            Text="{Binding Email}" />
+                                        <TextBlock
+                                            x:Name="EmployeeItemLastLogin"
+                                            Padding="0,2"
+                                            FontSize="12"
+                                            Foreground="#777">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="เข้าสู่ระบบล่าสุด: {0:dd/MM/yyyy HH:mm}">
+                                                    <Binding Path="LastLogin" />
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </DockPanel>
+            </materialDesign:Card>
+
+            <!--  ส่วนแสดงรายละเอียดพนักงาน  -->
+            <materialDesign:Card x:Name="EmployeeDetailCard" Grid.Column="1">
+                <Grid x:Name="EmployeeDetailGrid" Margin="16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!--  ไม่มีพนักงานที่เลือก  -->
+                    <TextBlock
+                        x:Name="NoEmployeeSelectedText"
+                        Grid.Row="0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontSize="18"
+                        Foreground="#555"
+                        Text="กรุณาเลือกพนักงานจากรายการ"
+                        Visibility="{Binding IsEmployeeSelected, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" />
+
+                    <!--  ส่วนข้อมูลพนักงาน  -->
+                    <Grid
+                        x:Name="EmployeeInfoGrid"
+                        Grid.Row="0"
+                        Visibility="{Binding IsEmployeeSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!--  รูปโปรไฟล์  -->
+                        <Border
+                            x:Name="ProfileImageBorder"
+                            Width="120"
+                            Height="120"
+                            Margin="0,0,24,0"
+                            Background="#EEEEEE"
+                            BorderBrush="#DDDDDD"
+                            BorderThickness="1"
+                            CornerRadius="60">
+                            <!--  รูปโปรไฟล์  -->
+                            <Grid x:Name="ProfileImageGrid">
+                                <materialDesign:PackIcon
+                                    x:Name="DefaultProfileIcon"
+                                    Width="80"
+                                    Height="80"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Foreground="#BBBBBB"
+                                    Kind="AccountCircle"
+                                    Visibility="{Binding IsEmployeeSelected, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" />
+                                <Border
+                                    x:Name="ProfileImageContainer"
+                                    Width="120"
+                                    Height="120"
+                                    CornerRadius="60"
+                                    Visibility="{Binding IsEmployeeSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <Border.Background>
+                                        <ImageBrush ImageSource="{Binding SelectedEmployeeImage}" Stretch="UniformToFill" />
+                                    </Border.Background>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <!--  ข้อมูลพนักงาน  -->
+                        <StackPanel
+                            x:Name="EmployeeDetailsPanel"
+                            Grid.Column="1"
+                            Margin="0,0,0,16">
+                            <TextBlock
+                                x:Name="EmployeeNameText"
+                                FontSize="24"
+                                FontWeight="Medium"
+                                Text="{Binding SelectedEmployee.Username}" />
+
+                            <Grid x:Name="EmployeeDetailsGrid" Margin="0,24,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <!--  คอลัมน์ซ้าย  -->
+                                <TextBlock
+                                    x:Name="FullNameLabel"
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Margin="0,0,16,8"
+                                    FontWeight="Medium"
+                                    Text="ชื่อ-นามสกุล:" />
+                                <TextBlock
+                                    x:Name="FullNameValue"
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Margin="0,0,32,8">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} {1}">
+                                            <Binding Path="SelectedEmployeeProfile.FirstName" />
+                                            <Binding Path="SelectedEmployeeProfile.LastName" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+
+                                <TextBlock
+                                    x:Name="EmailLabel"
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    Margin="0,0,16,8"
+                                    FontWeight="Medium"
+                                    Text="อีเมล:" />
+                                <TextBlock
+                                    x:Name="EmailValue"
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Margin="0,0,32,8"
+                                    Text="{Binding SelectedEmployee.Email}" />
+
+                                <TextBlock
+                                    x:Name="PhoneLabel"
+                                    Grid.Row="2"
+                                    Grid.Column="0"
+                                    Margin="0,0,16,8"
+                                    FontWeight="Medium"
+                                    Text="เบอร์โทรศัพท์:" />
+                                <TextBlock
+                                    x:Name="PhoneValue"
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    Margin="0,0,32,8"
+                                    Text="{Binding SelectedEmployeeProfile.PhoneNumber}" />
+
+                                <TextBlock
+                                    x:Name="AddressLabel"
+                                    Grid.Row="3"
+                                    Grid.Column="0"
+                                    Margin="0,0,16,8"
+                                    FontWeight="Medium"
+                                    Text="ที่อยู่:" />
+                                <TextBlock
+                                    x:Name="AddressValue"
+                                    Grid.Row="3"
+                                    Grid.Column="1"
+                                    Grid.ColumnSpan="4"
+                                    Margin="0,0,32,8"
+                                    Text="{Binding SelectedEmployeeProfile.Address}"
+                                    TextWrapping="Wrap" />
+                                <TextBlock
+                                    x:Name="StatusLabel"
+                                    Grid.Row="4"
+                                    Grid.Column="0"
+                                    Margin="0,0,16,8"
+                                    FontWeight="Medium"
+                                    Text="สถานะ:" />
+                                <StackPanel
+                                    x:Name="StatusPanel"
+                                    Grid.Row="4"
+                                    Grid.Column="1"
+                                    Margin="0,0,32,8"
+                                    Orientation="Horizontal">
+                                    <Ellipse
+                                        x:Name="StatusIndicator"
+                                        Width="10"
+                                        Height="10"
+                                        Margin="0,0,8,0"
+                                        VerticalAlignment="Center"
+                                        Fill="{Binding SelectedEmployee.IsActive, Converter={StaticResource BooleanToColorConverter}}" />
+                                    <TextBlock x:Name="StatusText" Text="{Binding SelectedEmployee.IsActive, Converter={StaticResource BooleanToTextActiveConverter}}" />
+                                </StackPanel>
+
+                                <!--  คอลัมน์ขวา  -->
+                                <TextBlock
+                                    x:Name="BirthdayLabel"
+                                    Grid.Row="0"
+                                    Grid.Column="2"
+                                    Margin="0,0,16,8"
+                                    FontWeight="Medium"
+                                    Text="วันเกิด:" />
+                                <TextBlock
+                                    x:Name="BirthdayValue"
+                                    Grid.Row="0"
+                                    Grid.Column="3"
+                                    Margin="0,0,0,8"
+                                    Text="{Binding SelectedEmployeeProfile.DateOfBirth, StringFormat=dd/MM/yyyy}" />
+
+                                <TextBlock
+                                    x:Name="GenderLabel"
+                                    Grid.Row="1"
+                                    Grid.Column="2"
+                                    Margin="0,0,16,8"
+                                    FontWeight="Medium"
+                                    Text="เพศ:" />
+                                <TextBlock
+                                    x:Name="GenderValue"
+                                    Grid.Row="1"
+                                    Grid.Column="3"
+                                    Margin="0,0,0,8"
+                                    Text="{Binding SelectedEmployeeProfile.Gender}" />
+
+                                <TextBlock
+                                    x:Name="LastLoginLabel"
+                                    Grid.Row="2"
+                                    Grid.Column="2"
+                                    Margin="0,0,16,8"
+                                    FontWeight="Medium"
+                                    Text="เข้าสู่ระบบล่าสุด:" />
+                                <TextBlock
+                                    x:Name="LastLoginValue"
+                                    Grid.Row="2"
+                                    Grid.Column="3"
+                                    Margin="0,0,0,8"
+                                    Text="{Binding SelectedEmployee.LastLogin, StringFormat=dd/MM/yyyy HH:mm}" />
+
+
+
+                            </Grid>
+
+                            <!--  ปุ่มแก้ไขและลบข้อมูล  -->
+                            <StackPanel
+                                x:Name="ActionButtonsPanel"
+                                Margin="0,16,0,0"
+                                HorizontalAlignment="Right"
+                                Orientation="Horizontal">
+                                <Button
+                                    x:Name="EditButton"
+                                    Margin="0,0,8,0"
+                                    Command="{Binding EditEmployeeCommand}"
+                                    Content="แก้ไขข้อมูล"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                <Button
+                                    x:Name="DeleteButton"
+                                    Command="{Binding DeleteEmployeeCommand}"
+                                    Content="ลบข้อมูล"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <!--  ส่วนข้อมูลใบหน้า  -->
+                    <materialDesign:Card
+                        x:Name="FaceDataCard"
+                        Grid.Row="1"
+                        Margin="0,16,0,0"
+                        Visibility="{Binding IsEmployeeSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <DockPanel x:Name="FaceDataPanel">
+                            <materialDesign:ColorZone
+                                x:Name="FaceDataHeader"
+                                Padding="16"
+                                DockPanel.Dock="Top"
+                                Mode="PrimaryLight">
+                                <Grid x:Name="FaceDataHeaderGrid">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel x:Name="FaceDataHeaderPanel" Orientation="Horizontal">
+                                        <materialDesign:PackIcon
+                                            x:Name="FaceDataIcon"
+                                            Width="24"
+                                            Height="24"
+                                            Margin="0,0,10,0"
+                                            VerticalAlignment="Center"
+                                            Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}"
+                                            Kind="Face" />
+                                        <TextBlock
+                                            x:Name="FaceDataHeaderText"
+                                            VerticalAlignment="Center"
+                                            FontSize="16"
+                                            FontWeight="Medium"
+                                            Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}"
+                                            Text="ข้อมูลใบหน้า" />
+                                    </StackPanel>
+
+                                    <Button
+                                        x:Name="AddFaceDataButton"
+                                        Grid.Column="1"
+                                        materialDesign:ElevationAssist.Elevation="Dp2"
+                                        Command="{Binding AddFaceDataCommand}"
+                                        Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
+                                        <materialDesign:PackIcon Kind="Plus" />
+                                    </Button>
+                                </Grid>
+                            </materialDesign:ColorZone>
+
+                            <Grid x:Name="FaceDataContentGrid" Margin="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="2*" />
+                                </Grid.ColumnDefinitions>
+
+                                <!--  รายการข้อมูลใบหน้า  -->
+                                <materialDesign:Card
+                                    x:Name="FaceDataListCard"
+                                    Margin="0,0,16,0"
+                                    Padding="8"
+                                    UniformCornerRadius="4">
+                                    <DockPanel x:Name="FaceDataListPanel">
+                                        <TextBlock
+                                            x:Name="FaceDataListTitle"
+                                            Margin="8,8,8,16"
+                                            DockPanel.Dock="Top"
+                                            FontWeight="Medium"
+                                            Text="รายการใบหน้าที่บันทึกไว้" />
+
+                                        <ListView
+                                            x:Name="FaceDataListView"
+                                            ItemsSource="{Binding EmployeeFaceData}"
+                                            SelectedItem="{Binding SelectedFace}">
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid x:Name="FaceDataItemGrid" Margin="8,4">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <StackPanel x:Name="FaceDataItemInfo">
+                                                            <TextBlock
+                                                                x:Name="FaceDataItemDate"
+                                                                FontWeight="Medium"
+                                                                Text="{Binding CreatedAt, StringFormat=วันที่: {0:dd/MM/yyyy}}" />
+                                                            <TextBlock
+                                                                x:Name="FaceDataItemTime"
+                                                                Foreground="#555"
+                                                                Text="{Binding CreatedAt, StringFormat=เวลา: {0:HH:mm:ss}}" />
+                                                        </StackPanel>
+
+                                                        <Button
+                                                            x:Name="DeleteFaceDataButton"
+                                                            Grid.Column="1"
+                                                            Command="{Binding DeleteFaceData}"
+                                                            Style="{StaticResource MaterialDesignIconButton}">
+                                                            <materialDesign:PackIcon
+                                                                x:Name="DeleteFaceDataIcon"
+                                                                Width="16"
+                                                                Height="16"
+                                                                Kind="Delete" />
+                                                        </Button>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+                                        </ListView>
+
+                                        <TextBlock
+                                            x:Name="NoFaceDataText"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Foreground="#777"
+                                            Text="ไม่มีข้อมูลใบหน้า"
+                                            Visibility="{Binding EmployeeFaceData.Count, Converter={StaticResource ZeroToVisibilityConverter}}" />
+                                    </DockPanel>
+                                </materialDesign:Card>
+
+                                <!--  แสดงรูปใบหน้า  -->
+                                <materialDesign:Card
+                                    x:Name="FaceImageCard"
+                                    Grid.Column="1"
+                                    Padding="16"
+                                    UniformCornerRadius="4">
+                                    <Grid x:Name="FaceImageGrid">
+                                        <TextBlock
+                                            x:Name="NoFaceSelectedText"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontSize="16"
+                                            Foreground="#777"
+                                            Text="เลือกข้อมูลใบหน้าเพื่อดูตัวอย่าง"
+                                            Visibility="{Binding IsFaceDataSelected, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" />
+
+                                        <DockPanel x:Name="FaceImagePanel" Visibility="{Binding IsFaceDataSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <TextBlock
+                                                x:Name="FaceImageTitle"
+                                                Margin="0,0,0,16"
+                                                DockPanel.Dock="Top"
+                                                FontSize="16"
+                                                FontWeight="Medium"
+                                                Text="{Binding SelectedFace.CreatedAt, StringFormat=ข้อมูลใบหน้า - บันทึกเมื่อ {0:dd/MM/yyyy HH:mm:ss}}" />
+
+                                            <Image
+                                                x:Name="FaceImage"
+                                                MaxHeight="300"
+                                                Source="{Binding SelectedFaceImage}"
+                                                Stretch="Uniform" />
+                                        </DockPanel>
+                                    </Grid>
+                                </materialDesign:Card>
+                            </Grid>
+                        </DockPanel>
+                    </materialDesign:Card>
+                </Grid>
+            </materialDesign:Card>
+        </Grid>
+    </Grid>
+</UserControl>

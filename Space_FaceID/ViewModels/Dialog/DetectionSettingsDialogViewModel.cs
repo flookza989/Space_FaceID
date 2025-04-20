@@ -12,12 +12,16 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using MaterialDesignThemes.Wpf;
 
-namespace Space_FaceID.ViewModels
+namespace Space_FaceID.ViewModels.Dialog
 {
-    public partial class DetectionSettingsViewModel : ObservableObject, IDisposable
+    public partial class DetectionSettingsDialogViewModel : ObservableObject, IDisposable
     {
-        private readonly IUnitOfWorkService _unitOfWorkService;
+        private readonly ICameraService _cameraService;
+        private readonly ICameraSettingService _cameraSettingService;
+        private readonly IFaceDetectionSettingService _faceDetectionSettingService;
+        private readonly IFaceRecognizeSettingService _faceRecognizeSettingService;
 
         private static readonly int _defaultCamera = 0;
         private static readonly int _defaultFps = 24;
@@ -27,6 +31,7 @@ namespace Space_FaceID.ViewModels
         private static readonly int _defaultMaxHeight = 2000;
         private static readonly bool _defaultIsFaceDetectionEnabled = true;
         private static readonly string _defaultResolution = "640x480";
+        private static readonly string _defaultFaceType = "Normal";
 
         private int _originalCameraIndex = _defaultCamera;
         private int _originalFpsValue = _defaultFps;
@@ -36,6 +41,7 @@ namespace Space_FaceID.ViewModels
         private int _originalDetectionThresholdValue = _defaultDetectionThreshold;
         private int _originalMaxWidthValue = _defaultMaxWidth;
         private int _originalMaxHeightValue = _defaultMaxHeight;
+        private string _originalFaceType = _defaultFaceType;
 
         [ObservableProperty]
         private bool _isDataChanged = false;
@@ -47,13 +53,13 @@ namespace Space_FaceID.ViewModels
         private int _selectedCamera = _defaultCamera;
 
         [ObservableProperty]
-        private ObservableCollection<string> _resolutions = new()
-        {
+        private ObservableCollection<string> _resolutions =
+        [
             "320x240",
             "640x480",
             "1280x720",
             "1920x1080"
-        };
+        ];
 
         [ObservableProperty]
         private bool _isLoading;
@@ -82,14 +88,25 @@ namespace Space_FaceID.ViewModels
         [ObservableProperty]
         private int _maxHeightValue = _defaultMaxHeight;
 
+        [ObservableProperty]
+        private ObservableCollection<string> _faceTypes = [];
+
+        [ObservableProperty]
+        private string _selectedFaceType = _defaultFaceType;
+
         private CameraSetting? _cameraSetting;
         private FaceDetectionSetting? _faceDetectionSetting;
 
-        public event Action? RequestClose;
-
-        public DetectionSettingsViewModel(IUnitOfWorkService unitOfWorkService)
+        public DetectionSettingsDialogViewModel(
+            ICameraService cameraService,
+            ICameraSettingService cameraSettingService,
+            IFaceDetectionSettingService faceDetectionSettingService,
+            IFaceRecognizeSettingService faceRecognizeSettingService)
         {
-            _unitOfWorkService = unitOfWorkService;
+            _cameraService = cameraService ?? throw new ArgumentNullException(nameof(cameraService));
+            _cameraSettingService = cameraSettingService ?? throw new ArgumentNullException(nameof(cameraSettingService));
+            _faceDetectionSettingService = faceDetectionSettingService ?? throw new ArgumentNullException(nameof(faceDetectionSettingService));
+            _faceRecognizeSettingService = faceRecognizeSettingService ?? throw new ArgumentNullException(nameof(faceRecognizeSettingService));
         }
 
         private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -106,6 +123,7 @@ namespace Space_FaceID.ViewModels
                 await LoadCamerasAsync();
                 await LoadCameraSettingAsync();
                 await LoadFaceDetectionSettingAsync();
+                await LoadFaceRecognizeSettingAsync();
                 PropertyChanged += OnPropertyChanged;
             }
             finally
@@ -116,7 +134,7 @@ namespace Space_FaceID.ViewModels
 
         private async Task LoadCamerasAsync()
         {
-            var cameras = await _unitOfWorkService.CameraService.FindConnectedCamerasAsync();
+            var cameras = await _cameraService.FindConnectedCamerasAsync();
             Cameras.Clear();
             foreach (var camera in cameras)
             {
@@ -132,7 +150,7 @@ namespace Space_FaceID.ViewModels
         {
             try
             {
-                _cameraSetting = await _unitOfWorkService.CameraSettingService.GetActiveCameraSettingAsync();
+                _cameraSetting = await _cameraSettingService.GetActiveCameraSettingAsync();
 
                 if (_cameraSetting == null)
                 {
@@ -146,7 +164,7 @@ namespace Space_FaceID.ViewModels
                         UpdatedBy = "System",
                         LastUpdated = DateTime.Now
                     };
-                    await _unitOfWorkService.CameraSettingService.AddAsync(_cameraSetting);
+                    await _cameraSettingService.AddAsync(_cameraSetting);
                 }
 
                 SelectedCamera = _cameraSetting.CameraIndex;
@@ -172,7 +190,7 @@ namespace Space_FaceID.ViewModels
         {
             try
             {
-                _faceDetectionSetting = await _unitOfWorkService.FaceDetectionSettingService.GetActiveFaceDetectionSettingAsync();
+                _faceDetectionSetting = await _faceDetectionSettingService.GetActiveFaceDetectionSettingAsync();
 
                 if (_faceDetectionSetting == null)
                 {
@@ -187,7 +205,7 @@ namespace Space_FaceID.ViewModels
                         UpdatedBy = "System",
                         LastUpdated = DateTime.Now
                     };
-                    await _unitOfWorkService.FaceDetectionSettingService.AddAsync(_faceDetectionSetting);
+                    await _faceDetectionSettingService.AddAsync(_faceDetectionSetting);
                 }
 
                 IsFaceDetectionEnabled = _faceDetectionSetting.IsEnabled;
@@ -215,6 +233,33 @@ namespace Space_FaceID.ViewModels
             }
         }
 
+        private async Task LoadFaceRecognizeSettingAsync()
+        {
+            try
+            {
+                var faceRecognizeSettings = await _faceRecognizeSettingService.GetAllAsync();
+                if (faceRecognizeSettings.Any())
+                {
+                    FaceTypes.Clear();
+                    foreach (var faceType in faceRecognizeSettings)
+                    {
+                        FaceTypes.Add(faceType.Name);
+
+                        if (faceType.IsEnabled)
+                        {
+                            SelectedFaceType = faceType.Name;
+                        }
+                    }
+
+                    _originalFaceType = SelectedFaceType;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"เกิดข้อผิดพลาดในการโหลดข้อมูลการตั้งค่าการจดจำใบหน้า: {ex.Message}", "ข้อผิดพลาด", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void CheckForChanges()
         {
             IsDataChanged =
@@ -225,7 +270,8 @@ namespace Space_FaceID.ViewModels
                 FaceSizeValue != _originalFaceSizeValue ||
                 DetectionThresholdValue != _originalDetectionThresholdValue ||
                 MaxWidthValue != _originalMaxWidthValue ||
-                MaxHeightValue != _originalMaxHeightValue;
+                MaxHeightValue != _originalMaxHeightValue ||
+                SelectedFaceType != _originalFaceType;
         }
 
 
@@ -244,7 +290,7 @@ namespace Space_FaceID.ViewModels
                     _cameraSetting.FrameWidth = width;
                     _cameraSetting.FrameHeight = height;
                     _cameraSetting.LastUpdated = DateTime.Now;
-                    await _unitOfWorkService.CameraSettingService.UpdateAsync(_cameraSetting);
+                    await _cameraSettingService.UpdateAsync(_cameraSetting);
                 }
 
                 if (_faceDetectionSetting != null)
@@ -255,13 +301,24 @@ namespace Space_FaceID.ViewModels
                     _faceDetectionSetting.MaxWidth = MaxWidthValue;
                     _faceDetectionSetting.MaxHeight = MaxHeightValue;
                     _faceDetectionSetting.LastUpdated = DateTime.Now;
-                    await _unitOfWorkService.FaceDetectionSettingService.UpdateAsync(_faceDetectionSetting);
+                    await _faceDetectionSettingService.UpdateAsync(_faceDetectionSetting);
+                }
+
+                if (SelectedFaceType != _originalFaceType)
+                {
+                    var faceRecognizeSettings = await _faceRecognizeSettingService.GetAllAsync();
+                    foreach (var faceType in faceRecognizeSettings)
+                    {
+                        faceType.IsEnabled = faceType.Name == SelectedFaceType;
+                    }
+                    await _faceRecognizeSettingService.UpdateRangeAsync(faceRecognizeSettings);
                 }
 
                 // แสดงข้อความยืนยันการบันทึก
                 MessageBox.Show("บันทึกการตั้งค่าเรียบร้อยแล้ว", "สำเร็จ", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                RequestClose?.Invoke();
+                // ปิด Dialog โดยส่งค่า true กลับ (บันทึกสำเร็จ)
+                DialogHost.Close("RootDialog", true);
             }
             catch (Exception ex)
             {
@@ -300,6 +357,8 @@ namespace Space_FaceID.ViewModels
         public void Dispose()
         {
             Cameras.Clear();
+
+            GC.SuppressFinalize(this);
         }
     }
 }

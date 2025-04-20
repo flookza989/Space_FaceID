@@ -17,7 +17,6 @@
 		<Folder Include="Resources\Styles\" />
 		<Folder Include="Utils\Logging\" />
 		<Folder Include="Utils\Security\" />
-		<Folder Include="ViewModels\Dialog\" />
 	</ItemGroup>
 
 	<ItemGroup>

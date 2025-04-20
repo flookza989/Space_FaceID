@@ -305,7 +305,7 @@
                                     VerticalAlignment="Center"
                                     BorderBrush="{DynamicResource PrimaryHueMidBrush}"
                                     BorderThickness="2"
-                                    Visibility="{Binding IsFaceDetected, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    Visibility="{Binding IsFaceDetected, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <Border.RenderTransform>
                                         <ScaleTransform ScaleX="{Binding FaceScaleX}" ScaleY="{Binding FaceScaleY}" />
                                     </Border.RenderTransform>
@@ -383,7 +383,7 @@
                                     Grid.Column="1"
                                     Margin="4,0,0,0"
                                     Command="{Binding ConfigureDetectionCommand}"
-                                    Content="ตั้งค่าการตรวจจับ"
+                                    Content="ตั้งค่าด่วน"
                                     Style="{StaticResource MaterialDesignOutlinedButton}" />
                             </Grid>
 

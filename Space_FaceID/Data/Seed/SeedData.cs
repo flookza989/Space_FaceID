@@ -6,8 +6,10 @@ using Space_FaceID.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
+using ViewFaceCore.Model;
 
 namespace Space_FaceID.Data.Seed
 {
@@ -26,6 +28,7 @@ namespace Space_FaceID.Data.Seed
             await SeedAdminUser(context);
             await SeedFaceDetectionSetting(context);
             await SeedCameraSetting(context);
+            await SeedFaceRecognizeSetting(context);
 
             await context.SaveChangesAsync();
         }
@@ -204,7 +207,7 @@ namespace Space_FaceID.Data.Seed
                 PhoneNumber = "1234567890",
                 Address = "123 Admin Street, Admin City, Admin Country",
                 DateOfBirth = DateTime.Now,
-                Gender = "Other",
+                Gender = "อื่นๆ",
             };
 
             await context.UserProfiles.AddAsync(adminProfile);
@@ -258,6 +261,48 @@ namespace Space_FaceID.Data.Seed
                 UpdatedBy = "System"
             };
             await context.CameraSettings.AddAsync(settings);
+        }
+
+        private static async Task SeedFaceRecognizeSetting(FaceIDDbContext context)
+        {
+            if (await context.FaceRecognizeSettings.AnyAsync())
+                return;
+
+            var settings = new FaceRecognizeSetting
+            {
+                Name = FaceType.Normal.ToString(),
+                LandmarkType = FaceType.Normal.ToString(),
+                RecognizerType = FaceType.Normal.ToString(),
+                RecognizeThreshold = 0.62f,
+                IsEnabled = true,
+                LastUpdated = DateTime.Now,
+                UpdatedBy = "System"
+            };
+            await context.FaceRecognizeSettings.AddAsync(settings);
+
+            var lightSetting = new FaceRecognizeSetting
+            {
+                Name = FaceType.Light.ToString(),
+                LandmarkType = FaceType.Light.ToString(),
+                RecognizerType = FaceType.Light.ToString(),
+                RecognizeThreshold = 0.55f,
+                IsEnabled = false,
+                LastUpdated = DateTime.Now,
+                UpdatedBy = "System"
+            };
+            await context.FaceRecognizeSettings.AddAsync(lightSetting);
+
+            var maskSetting = new FaceRecognizeSetting
+            {
+                Name = FaceType.Mask.ToString(),
+                LandmarkType = FaceType.Mask.ToString(),
+                RecognizerType = FaceType.Mask.ToString(),
+                RecognizeThreshold = 0.4f,
+                IsEnabled = false,
+                LastUpdated = DateTime.Now,
+                UpdatedBy = "System"
+            };
+            await context.FaceRecognizeSettings.AddAsync(maskSetting);
         }
     }
 }

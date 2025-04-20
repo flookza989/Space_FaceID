@@ -1,5 +1,7 @@
 ﻿using OpenCvSharp;
 using OpenCvSharp.WpfExtensions;
+using Space_FaceID.Models.Entities;
+using Space_FaceID.Repositories.Interfaces;
 using Space_FaceID.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -14,20 +16,36 @@ namespace Space_FaceID.Services.Implementation
 {
     public class CameraService : ICameraService
     {
+        private readonly IUnitOfWorkRepository _unitOfWorkRepository;
+        private readonly IFaceDetectionService _faceDetectionService;
+        private readonly IImageService _imageService;
         private VideoCapture? _capture;
         private Mat _frame;
         private bool _isRunning = false;
         private DispatcherTimer? _captureTimer;
         private BitmapSource? _currentFrame;
+        private FaceDetectionSetting? _faceDetectionSetting;
 
-        public CameraService()
+        public CameraService(IUnitOfWorkRepository unitOfWorkRepository, IFaceDetectionService faceDetectionService, IImageService imageService)
         {
+            _unitOfWorkRepository = unitOfWorkRepository ?? throw new ArgumentNullException(nameof(unitOfWorkRepository));
+            _faceDetectionService = faceDetectionService ?? throw new ArgumentNullException(nameof(faceDetectionService));
+            _imageService = imageService ?? throw new ArgumentNullException(nameof(imageService));
+
             _frame = new Mat();
         }
 
         public bool IsRunning => _isRunning;
 
         public event EventHandler<BitmapSource>? NewFrameAvailable;
+
+        private async Task LoadFaceDetectionSettingAsync()
+        {
+            // โหลดการตั้งค่าการตรวจจับใบหน้า
+            _faceDetectionSetting = await _unitOfWorkRepository.FaceDetectionSettingRepository.GetActiveFaceDetectionSettingAsync();
+            if (_faceDetectionSetting == null)
+                throw new Exception("ไม่พบการตั้งค่าการตรวจจับใบหน้า");
+        }
 
         public async Task<bool> StartCameraAsync(int cameraIndex = 0)
         {
@@ -52,6 +70,9 @@ namespace Space_FaceID.Services.Implementation
                 if (isOpened)
                 {
                     _isRunning = true;
+
+                    await LoadFaceDetectionSettingAsync();
+                    await _faceDetectionService.LoadConfigurationFaceDetectorAsync();
 
                     // ใช้ DispatcherTimer แทน Task.Run
                     _captureTimer = new DispatcherTimer(DispatcherPriority.Render)
@@ -92,11 +113,10 @@ namespace Space_FaceID.Services.Implementation
             _capture = null;
         }
 
-        private void CaptureFrame(object? sender, EventArgs e)
+        private async void CaptureFrame(object? sender, EventArgs e)
         {
             if (!_isRunning || _capture == null)
                 return;
-
             try
             {
                 if (_capture.Read(_frame) && !_frame.Empty())
@@ -105,10 +125,38 @@ namespace Space_FaceID.Services.Implementation
                     var frameImage = _frame.ToBitmapSource();
                     frameImage.Freeze(); // สำคัญมาก: ทำให้สามารถส่งระหว่างเธรดได้
 
-                    _currentFrame = frameImage;
+                    if (_faceDetectionSetting != null && _faceDetectionSetting.IsEnabled)
+                    {
+                        try
+                        {
+                            // แปลง BitmapSource เป็น byte array โดยใช้ ImageService
+                            byte[] imageBytes = _imageService.ConvertBitmapSourceToBytes(frameImage);
 
-                    // เรียก event - ตอนนี้เราอยู่บนเธรด UI อยู่แล้ว เพราะใช้ DispatcherTimer
-                    NewFrameAvailable?.Invoke(this, frameImage);
+                            // ส่งไปให้ FaceDetectionService ประมวลผล
+                            var detectionResult = await _faceDetectionService.DetectFromBytesAsync(imageBytes);
+
+                            // สร้างกรอบล้อมรอบใบหน้าที่ตรวจพบบนภาพโดยใช้ ImageService
+                            if (detectionResult.TotalFaces > 0)
+                            {
+                                _currentFrame = _imageService.DrawFacesOnImage(frameImage, detectionResult.Faces);
+                            }
+                            else
+                            {
+                                _currentFrame = frameImage;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine($"Face detection error: {ex.Message}");
+                            _currentFrame = frameImage;
+                        }
+                    }
+                    else
+                    {
+                        _currentFrame = frameImage;
+                    }
+
+                    NewFrameAvailable?.Invoke(this, _currentFrame);
                 }
             }
             catch (Exception ex)
