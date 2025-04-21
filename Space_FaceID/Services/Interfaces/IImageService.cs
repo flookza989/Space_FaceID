@@ -15,5 +15,6 @@ namespace Space_FaceID.Services.Interfaces
         FaceImage LoadImage(byte[] imageData);
         byte[] ConvertBitmapSourceToBytes(BitmapSource bitmapSource);
         BitmapSource DrawFacesOnImage(BitmapSource originalImage, FaceInfo[]? faces);
+        BitmapImage? ByteArrayToBitmapImage(byte[]? byteArray);
     }
 }

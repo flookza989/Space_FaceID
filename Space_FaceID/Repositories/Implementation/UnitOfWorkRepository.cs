@@ -28,12 +28,40 @@ namespace Space_FaceID.Repositories.Implementation
         private readonly IUserRepository _userRepository;
         public IUserRepository UserRepository => _userRepository;
 
+        private readonly IAuthenticationLogRepository _authenticationLogRepository;
+        public IAuthenticationLogRepository AuthenticationLogRepository => _authenticationLogRepository;
+
+        private readonly IFaceAuthenticationSettingRepository _faceAuthenticationSettingRepository;
+        public IFaceAuthenticationSettingRepository FaceAuthenticationSettingRepository => _faceAuthenticationSettingRepository;
+
+        private readonly ISystemAuditLogRepository _systemAuditLogRepository;
+        public ISystemAuditLogRepository SystemAuditLogRepository => _systemAuditLogRepository;
+
+        private readonly IUserRoleRepository _userRoleRepository;
+        public IUserRoleRepository UserRoleRepository => _userRoleRepository;
+
+        private readonly IRoleRepository _roleRepository;
+        public IRoleRepository RoleRepository => _roleRepository;
+
+        private readonly IPermissionRepository _permissionRepository;
+        public IPermissionRepository PermissionRepository => _permissionRepository;
+
+        private readonly IRolePermissionRepository _rolePermissionRepository;
+        public IRolePermissionRepository RolePermissionRepository => _rolePermissionRepository;
+
         public UnitOfWorkRepository(ICameraSettingRepository cameraSettingRepository,
             IFaceDetectionSettingRepository faceDetectionSettingRepository,
             IFaceRecognizeSettingRepository faceRecognizeSettingRepository,
             IFaceDataRepository faceDataRepository,
             IUserProfileRepository userProfileRepository,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            IAuthenticationLogRepository authenticationLogRepository,
+            IFaceAuthenticationSettingRepository faceAuthenticationSettingRepository,
+            ISystemAuditLogRepository systemAuditLogRepository,
+            IUserRoleRepository userRoleRepository,
+            IRoleRepository roleRepository,
+            IPermissionRepository permissionRepository,
+            IRolePermissionRepository rolePermissionRepository)
         {
             _cameraSettingRepository = cameraSettingRepository ?? throw new ArgumentNullException(nameof(cameraSettingRepository));
             _faceDetectionSettingRepository = faceDetectionSettingRepository ?? throw new ArgumentNullException(nameof(faceDetectionSettingRepository));
@@ -41,9 +69,13 @@ namespace Space_FaceID.Repositories.Implementation
             _faceDataRepository = faceDataRepository ?? throw new ArgumentNullException(nameof(faceDataRepository));
             _userProfileRepository = userProfileRepository ?? throw new ArgumentNullException(nameof(userProfileRepository));
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            _authenticationLogRepository = authenticationLogRepository ?? throw new ArgumentNullException(nameof(authenticationLogRepository));
+            _faceAuthenticationSettingRepository = faceAuthenticationSettingRepository ?? throw new ArgumentNullException(nameof(faceAuthenticationSettingRepository));
+            _systemAuditLogRepository = systemAuditLogRepository ?? throw new ArgumentNullException(nameof(systemAuditLogRepository));
+            _userRoleRepository = userRoleRepository ?? throw new ArgumentNullException(nameof(userRoleRepository));
+            _roleRepository = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
+            _permissionRepository = permissionRepository ?? throw new ArgumentNullException(nameof(permissionRepository));
+            _rolePermissionRepository = rolePermissionRepository ?? throw new ArgumentNullException(nameof(rolePermissionRepository));
         }
-
-
-
     }
 }

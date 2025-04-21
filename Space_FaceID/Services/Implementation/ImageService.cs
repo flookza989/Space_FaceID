@@ -42,7 +42,7 @@ namespace Space_FaceID.Services.Implementation
         public BitmapSource DrawFacesOnImage(BitmapSource originalImage, FaceInfo[]? faces)
         {
             // สร้าง DrawingVisual เพื่อวาดบนภาพ
-            DrawingVisual drawingVisual = new DrawingVisual();
+            DrawingVisual drawingVisual = new();
 
             using (DrawingContext drawingContext = drawingVisual.RenderOpen())
             {
@@ -56,17 +56,17 @@ namespace Space_FaceID.Services.Implementation
                     foreach (var face in faces)
                     {
                         // สร้างกรอบสี่เหลี่ยม
-                        Rect faceRect = new Rect(face.Location.X, face.Location.Y,
-                                                 face.Location.Width, face.Location.Height);
+                        Rect faceRect = new(face.Location.X, face.Location.Y,
+                                            face.Location.Width, face.Location.Height);
 
                         // กำหนดสีและความหนาของเส้น
-                        Pen pen = new Pen(new SolidColorBrush(Colors.LimeGreen), 2);
+                        Pen pen = new(new SolidColorBrush(Colors.LimeGreen), 2);
 
                         // วาดกรอบสี่เหลี่ยม
                         drawingContext.DrawRectangle(null, pen, faceRect);
 
                         // อาจเพิ่มข้อความแสดงความเชื่อมั่น (confidence)
-                        FormattedText text = new FormattedText(
+                        FormattedText text = new(
                             $"Confidence: {face.Score:F2}",
                             CultureInfo.InvariantCulture,
                             FlowDirection.LeftToRight,
@@ -81,7 +81,7 @@ namespace Space_FaceID.Services.Implementation
             }
 
             // แปลง DrawingVisual เป็น BitmapSource
-            RenderTargetBitmap renderBitmap = new RenderTargetBitmap(
+            RenderTargetBitmap renderBitmap = new(
                 (int)originalImage.Width, (int)originalImage.Height,
                 96, 96, PixelFormats.Pbgra32);
 
@@ -89,6 +89,27 @@ namespace Space_FaceID.Services.Implementation
             renderBitmap.Freeze(); // สำคัญ: ทำให้สามารถส่งระหว่างเธรดได้
 
             return renderBitmap;
+        }
+
+        public BitmapImage? ByteArrayToBitmapImage(byte[]? byteArray)
+        {
+            if (byteArray == null || byteArray.Length == 0) return null;
+
+            try
+            {
+                using MemoryStream stream = new(byteArray);
+                BitmapImage image = new();
+                image.BeginInit();
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.StreamSource = stream;
+                image.EndInit();
+                image.Freeze(); // ทำให้ thread-safe
+                return image;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }
