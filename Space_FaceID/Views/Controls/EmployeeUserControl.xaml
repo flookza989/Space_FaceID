@@ -181,7 +181,7 @@
                     <!--  ไม่มีพนักงานที่เลือก  -->
                     <TextBlock
                         x:Name="NoEmployeeSelectedText"
-                        Grid.Row="0"
+                        Grid.Row="1"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         FontSize="18"
@@ -402,14 +402,20 @@
                                 <Button
                                     x:Name="EditButton"
                                     Margin="0,0,8,0"
+                                    materialDesign:ElevationAssist.Elevation="Dp2"
                                     Command="{Binding EditEmployeeCommand}"
                                     Content="แก้ไขข้อมูล"
-                                    Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                    Style="{StaticResource MaterialDesignFlatLightBgButton}" />
                                 <Button
                                     x:Name="DeleteButton"
+                                    materialDesign:ElevationAssist.Elevation="Dp2"
+                                    Background="Crimson"
+                                    BorderBrush="Crimson"
                                     Command="{Binding DeleteEmployeeCommand}"
-                                    Content="ลบข้อมูล"
-                                    Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                    Content="ลบพนักงาน"
+                                    Foreground="White"
+                                    IsEnabled="{Binding IsAdmin}"
+                                    Style="{StaticResource MaterialDesignFlatLightBgButton}" />
                             </StackPanel>
                         </StackPanel>
                     </Grid>
@@ -455,7 +461,7 @@
                                         Grid.Column="1"
                                         materialDesign:ElevationAssist.Elevation="Dp2"
                                         Command="{Binding AddFaceDataCommand}"
-                                        Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
+                                        Style="{StaticResource MaterialDesignIconForegroundButton}">
                                         <materialDesign:PackIcon Kind="Plus" />
                                     </Button>
                                 </Grid>
@@ -463,13 +469,14 @@
 
                             <Grid x:Name="FaceDataContentGrid" Margin="16">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="2*" />
                                 </Grid.ColumnDefinitions>
 
                                 <!--  รายการข้อมูลใบหน้า  -->
                                 <materialDesign:Card
                                     x:Name="FaceDataListCard"
+                                    Grid.Column="0"
                                     Margin="0,0,16,0"
                                     Padding="8"
                                     UniformCornerRadius="4">
@@ -507,7 +514,8 @@
                                                         <Button
                                                             x:Name="DeleteFaceDataButton"
                                                             Grid.Column="1"
-                                                            Command="{Binding DeleteFaceData}"
+                                                            Command="{Binding DataContext.DeleteFaceDataCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
+                                                            CommandParameter="{Binding}"
                                                             Style="{StaticResource MaterialDesignIconButton}">
                                                             <materialDesign:PackIcon
                                                                 x:Name="DeleteFaceDataIcon"

@@ -22,8 +22,6 @@ namespace Space_FaceID.Data.Seed
 
             // สร้างข้อมูลเริ่มต้น
             await SeedRoles(context);
-            await SeedPermissions(context);
-            await SeedRolePermissions(context);
             await SeedDefaultSettings(context);
             await SeedAdminUser(context);
             await SeedFaceDetectionSetting(context);
@@ -42,7 +40,7 @@ namespace Space_FaceID.Data.Seed
             {
                 new Role
                 {
-                    Name = RoleName.Admin,
+                    Name = RoleName.Admin.ToString(),
                     Description = "ผู้ดูแลระบบที่มีสิทธิ์ทั้งหมด",
                     IsDefault = false,
                     IsSystem = true,
@@ -50,7 +48,7 @@ namespace Space_FaceID.Data.Seed
                 },
                 new Role
                 {
-                    Name = RoleName.User,
+                    Name = RoleName.User.ToString(),
                     Description = "ผู้ใช้งานทั่วไป",
                     IsDefault = true,
                     IsSystem = true,
@@ -58,7 +56,7 @@ namespace Space_FaceID.Data.Seed
                 },
                 new Role
                 {
-                    Name = RoleName.Supervisor,
+                    Name = RoleName.Supervisor.ToString(),
                     Description = "ผู้ดูแลที่มีสิทธิ์บางส่วน",
                     IsDefault = false,
                     IsSystem = true,
@@ -67,100 +65,6 @@ namespace Space_FaceID.Data.Seed
             };
 
             await context.Roles.AddRangeAsync(roles);
-        }
-
-        private static async Task SeedPermissions(FaceIDDbContext context)
-        {
-            if (await context.Permissions.AnyAsync())
-                return;
-
-            var permissions = new Permission[]
-            {
-                // User Management
-                new Permission { Name = PermissionName.UsersView, Description = "ดูข้อมูลผู้ใช้", Category = PermissionCategory.UserManagement, IsSystem = true },
-                new Permission { Name = PermissionName.UsersCreate, Description = "สร้างผู้ใช้ใหม่", Category = PermissionCategory.UserManagement, IsSystem = true },
-                new Permission { Name = PermissionName.UsersEdit, Description = "แก้ไขข้อมูลผู้ใช้", Category = PermissionCategory.UserManagement, IsSystem = true },
-                new Permission { Name = PermissionName.UsersDelete, Description = "ลบผู้ใช้", Category = PermissionCategory.UserManagement, IsSystem = true },
-                
-                // Face Recognition
-                new Permission { Name = PermissionName.FaceIdRegister, Description = "ลงทะเบียนใบหน้า", Category = PermissionCategory.FaceRecognition, IsSystem = true },
-                new Permission { Name = PermissionName.FaceIdVerify, Description = "ยืนยันตัวตนด้วยใบหน้า", Category = PermissionCategory.FaceRecognition, IsSystem = true },
-                
-                // Settings
-                new Permission { Name = PermissionName.FaceIdSettings, Description = "ปรับแต่งการตั้งค่าระบบยืนยันตัวตน", Category = PermissionCategory.Settings, IsSystem = true },
-                new Permission { Name = PermissionName.SystemSettings, Description = "ปรับแต่งการตั้งค่าระบบ", Category = PermissionCategory.Settings, IsSystem = true },
-                
-                // Logs & Reporting
-                new Permission { Name = PermissionName.ViewLogs, Description = "ดูข้อมูลบันทึกระบบ", Category = PermissionCategory.LogsAndReporting, IsSystem = true },
-                new Permission { Name = PermissionName.ExportReports, Description = "ส่งออกรายงาน", Category = PermissionCategory.LogsAndReporting, IsSystem = true }
-            };
-
-            await context.Permissions.AddRangeAsync(permissions);
-        }
-
-        private static async Task SeedRolePermissions(FaceIDDbContext context)
-        {
-            // ต้องมั่นใจว่ามีการบันทึก Roles และ Permissions ก่อน
-            await context.SaveChangesAsync();
-
-            if (await context.RolePermissions.AnyAsync())
-                return;
-
-            // ค้นหา RoleId ของ Admin
-            var adminRole = await context.Roles.FirstOrDefaultAsync(r => r.Name == RoleName.Admin);
-            var userRole = await context.Roles.FirstOrDefaultAsync(r => r.Name == RoleName.User);
-            var supervisorRole = await context.Roles.FirstOrDefaultAsync(r => r.Name == RoleName.Supervisor);
-
-            if (adminRole == null || userRole == null || supervisorRole == null)
-                return;
-
-            // ค้นหา PermissionId ทั้งหมด
-            var permissions = await context.Permissions.ToListAsync();
-            if (!permissions.Any())
-                return;
-
-            // สร้าง RolePermissions สำหรับ Admin (มีสิทธิ์ทั้งหมด)
-            var adminPermissions = permissions.Select(p => new RolePermission
-            {
-                RoleId = adminRole.Id,
-                PermissionId = p.Id,
-                CreatedAt = DateTime.Now,
-                CreatedBy = "System"
-            }).ToList();
-
-            await context.RolePermissions.AddRangeAsync(adminPermissions);
-
-            // สร้าง RolePermissions สำหรับ User (มีสิทธิ์จำกัด)
-            var userPermissionNames = new[] { PermissionName.FaceIdRegister, PermissionName.FaceIdVerify };
-            var userPermissions = permissions
-                .Where(p => userPermissionNames.Contains(p.Name))
-                .Select(p => new RolePermission
-                {
-                    RoleId = userRole.Id,
-                    PermissionId = p.Id,
-                    CreatedAt = DateTime.Now,
-                    CreatedBy = "System"
-                }).ToList();
-
-            await context.RolePermissions.AddRangeAsync(userPermissions);
-
-            // สร้าง RolePermissions สำหรับ Supervisor
-            var supervisorPermissionNames = new[] {
-                PermissionName.UsersView, PermissionName.UsersCreate, PermissionName.UsersEdit,
-                PermissionName.FaceIdRegister, PermissionName.FaceIdVerify,
-                PermissionName.ViewLogs, PermissionName.ExportReports
-            };
-            var supervisorPermissions = permissions
-                .Where(p => supervisorPermissionNames.Contains(p.Name))
-                .Select(p => new RolePermission
-                {
-                    RoleId = supervisorRole.Id,
-                    PermissionId = p.Id,
-                    CreatedAt = DateTime.Now,
-                    CreatedBy = "System"
-                }).ToList();
-
-            await context.RolePermissions.AddRangeAsync(supervisorPermissions);
         }
 
         private static async Task SeedDefaultSettings(FaceIDDbContext context)
@@ -186,9 +90,15 @@ namespace Space_FaceID.Data.Seed
             if (await context.Users.AnyAsync(u => u.Username == "admin"))
                 return;
 
+            // หา Admin Role
+            var adminRole = await context.Roles.FirstOrDefaultAsync(r => r.Name == RoleName.Admin.ToString());
+            if (adminRole == null)
+                return;
+
             // สร้างผู้ใช้ Admin
             var adminUser = new User
             {
+                RoleId = adminRole.Id,  //  RoleIdAdmin
                 Username = "admin",
                 Email = "admin@spacefaceid.com",
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
@@ -211,23 +121,6 @@ namespace Space_FaceID.Data.Seed
             };
 
             await context.UserProfiles.AddAsync(adminProfile);
-
-            // หา Admin Role
-            var adminRole = await context.Roles.FirstOrDefaultAsync(r => r.Name == RoleName.Admin);
-            if (adminRole == null)
-                return;
-
-            // สร้าง UserRole สำหรับ Admin
-            var userRole = new UserRole
-            {
-                UserId = adminUser.Id,
-                RoleId = adminRole.Id,
-                CreatedAt = DateTime.Now,
-                CreatedBy = "System"
-
-            };
-
-            await context.UserRoles.AddAsync(userRole);
         }
 
         private static async Task SeedFaceDetectionSetting(FaceIDDbContext context)

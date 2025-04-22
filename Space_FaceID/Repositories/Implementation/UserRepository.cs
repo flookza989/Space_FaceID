@@ -18,6 +18,14 @@ namespace Space_FaceID.Repositories.Implementation
             _contextFactory = contextFactory;
         }
 
+        public async Task<List<User>> GetAllUserWithRoleAsync()
+        {
+            using var context = _contextFactory.CreateDbContext();
+            return await context.Users
+                .Include(u => u.Role)
+                .ToListAsync();
+        }
+
 
     }
 }

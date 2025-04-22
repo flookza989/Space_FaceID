@@ -37,17 +37,8 @@ namespace Space_FaceID.Repositories.Implementation
         private readonly ISystemAuditLogRepository _systemAuditLogRepository;
         public ISystemAuditLogRepository SystemAuditLogRepository => _systemAuditLogRepository;
 
-        private readonly IUserRoleRepository _userRoleRepository;
-        public IUserRoleRepository UserRoleRepository => _userRoleRepository;
-
         private readonly IRoleRepository _roleRepository;
         public IRoleRepository RoleRepository => _roleRepository;
-
-        private readonly IPermissionRepository _permissionRepository;
-        public IPermissionRepository PermissionRepository => _permissionRepository;
-
-        private readonly IRolePermissionRepository _rolePermissionRepository;
-        public IRolePermissionRepository RolePermissionRepository => _rolePermissionRepository;
 
         public UnitOfWorkRepository(ICameraSettingRepository cameraSettingRepository,
             IFaceDetectionSettingRepository faceDetectionSettingRepository,
@@ -58,10 +49,7 @@ namespace Space_FaceID.Repositories.Implementation
             IAuthenticationLogRepository authenticationLogRepository,
             IFaceAuthenticationSettingRepository faceAuthenticationSettingRepository,
             ISystemAuditLogRepository systemAuditLogRepository,
-            IUserRoleRepository userRoleRepository,
-            IRoleRepository roleRepository,
-            IPermissionRepository permissionRepository,
-            IRolePermissionRepository rolePermissionRepository)
+            IRoleRepository roleRepository)
         {
             _cameraSettingRepository = cameraSettingRepository ?? throw new ArgumentNullException(nameof(cameraSettingRepository));
             _faceDetectionSettingRepository = faceDetectionSettingRepository ?? throw new ArgumentNullException(nameof(faceDetectionSettingRepository));
@@ -72,10 +60,7 @@ namespace Space_FaceID.Repositories.Implementation
             _authenticationLogRepository = authenticationLogRepository ?? throw new ArgumentNullException(nameof(authenticationLogRepository));
             _faceAuthenticationSettingRepository = faceAuthenticationSettingRepository ?? throw new ArgumentNullException(nameof(faceAuthenticationSettingRepository));
             _systemAuditLogRepository = systemAuditLogRepository ?? throw new ArgumentNullException(nameof(systemAuditLogRepository));
-            _userRoleRepository = userRoleRepository ?? throw new ArgumentNullException(nameof(userRoleRepository));
             _roleRepository = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
-            _permissionRepository = permissionRepository ?? throw new ArgumentNullException(nameof(permissionRepository));
-            _rolePermissionRepository = rolePermissionRepository ?? throw new ArgumentNullException(nameof(rolePermissionRepository));
         }
     }
 }

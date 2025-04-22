@@ -19,10 +19,7 @@ namespace Space_FaceID.Data.Context
         public DbSet<AuthenticationLog> AuthenticationLogs { get; set; }
         public DbSet<FaceAuthenticationSetting> FaceAuthenticationSettings { get; set; }
         public DbSet<SystemAuditLog> SystemAuditLogs { get; set; }
-        public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<Permission> Permissions { get; set; }
-        public DbSet<RolePermission> RolePermissions { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -41,46 +38,32 @@ namespace Space_FaceID.Data.Context
                 .HasForeignKey(f => f.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // ความสัมพันธ์ User - UserProfile (1:1) ถ้าคุณใช้ UserProfile
+            // ความสัมพันธ์ User - Role (N:1)
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Role)
+                .WithMany(r => r.Users)
+                .HasForeignKey(u => u.RoleId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // ความสัมพันธ์ User - UserProfile (1:1)
             modelBuilder.Entity<User>()
                 .HasOne(u => u.Profile)
                 .WithOne(p => p.User)
                 .HasForeignKey<UserProfile>(p => p.UserId);
 
-            // ความสัมพันธ์อื่นๆ
+            // ความสัมพันธ์ User - AuthenticationLog (1:N)
             modelBuilder.Entity<AuthenticationLog>()
                 .HasOne(l => l.User)
                 .WithMany()
                 .HasForeignKey(l => l.UserId)
                 .IsRequired(false);
 
+            // ความสัมพันธ์ User - SystemAuditLog (1:N)
             modelBuilder.Entity<SystemAuditLog>()
                 .HasOne(l => l.User)
                 .WithMany()
                 .HasForeignKey(l => l.UserId)
                 .IsRequired(false);
-
-            // ความสัมพันธ์ User - Role (N:N)
-            modelBuilder.Entity<UserRole>()
-                .HasOne(ur => ur.User)
-                .WithMany(u => u.UserRoles)
-                .HasForeignKey(ur => ur.UserId);
-
-            modelBuilder.Entity<UserRole>()
-                .HasOne(ur => ur.Role)
-                .WithMany(r => r.UserRoles)
-                .HasForeignKey(ur => ur.RoleId);
-
-            // ความสัมพันธ์ Role - Permission (N:N)
-            modelBuilder.Entity<RolePermission>()
-                .HasOne(rp => rp.Role)
-                .WithMany(r => r.RolePermissions)
-                .HasForeignKey(rp => rp.RoleId);
-
-            modelBuilder.Entity<RolePermission>()
-                .HasOne(rp => rp.Permission)
-                .WithMany(p => p.RolePermissions)
-                .HasForeignKey(rp => rp.PermissionId);
 
             // กำหนด Index
             modelBuilder.Entity<User>()
@@ -99,14 +82,6 @@ namespace Space_FaceID.Data.Context
 
             modelBuilder.Entity<SystemAuditLog>()
                 .HasIndex(l => l.Timestamp);
-
-            modelBuilder.Entity<UserRole>()
-                .HasIndex(ur => new { ur.UserId, ur.RoleId })
-                .IsUnique();
-
-            modelBuilder.Entity<RolePermission>()
-                .HasIndex(rp => new { rp.RoleId, rp.PermissionId })
-                .IsUnique();
 
             // กำหนด Primary Key
             modelBuilder.Entity<User>()
@@ -144,22 +119,6 @@ namespace Space_FaceID.Data.Context
                 .Property(l => l.Id)
                 .ValueGeneratedOnAdd();
 
-            modelBuilder.Entity<UserRole>()
-                .HasKey(ur => ur.Id);
-
-            modelBuilder.Entity<UserRole>()
-                .Property(ur => ur.Id)
-                .ValueGeneratedOnAdd();
-
-            modelBuilder.Entity<RolePermission>()
-                .HasKey(rp => rp.Id);
-
-            modelBuilder.Entity<RolePermission>()
-                .Property(rp => rp.Id)
-                .ValueGeneratedOnAdd();
-
-
-
 
             // กำหนด Required Fields และขนาด
             modelBuilder.Entity<User>(entity =>
@@ -167,6 +126,7 @@ namespace Space_FaceID.Data.Context
                 entity.Property(u => u.Username).IsRequired().HasMaxLength(50);
                 entity.Property(u => u.Email).HasMaxLength(100);
                 entity.Property(u => u.PasswordHash).IsRequired();
+                entity.Property(u => u.RoleId).IsRequired();
                 entity.Property(u => u.IsActive).IsRequired();
             });
 
@@ -177,14 +137,6 @@ namespace Space_FaceID.Data.Context
                 entity.Property(up => up.LastName).HasMaxLength(50);
                 entity.Property(up => up.PhoneNumber).HasMaxLength(20);
                 entity.Property(up => up.Gender).HasMaxLength(10);
-            });
-
-            modelBuilder.Entity<UserRole>(entity =>
-            {
-                entity.Property(ur => ur.UserId).IsRequired();
-                entity.Property(ur => ur.RoleId).IsRequired();
-                entity.Property(ur => ur.CreatedAt).IsRequired();
-                entity.Property(ur => ur.CreatedBy).IsRequired();
             });
 
             modelBuilder.Entity<FaceData>(entity =>
@@ -240,23 +192,6 @@ namespace Space_FaceID.Data.Context
                 entity.Property(r => r.IsSystem).IsRequired();
                 entity.Property(r => r.CreatedAt).IsRequired();
             });
-
-            modelBuilder.Entity<RolePermission>(entity =>
-            {
-                entity.Property(rp => rp.RoleId).IsRequired();
-                entity.Property(rp => rp.PermissionId).IsRequired();
-                entity.Property(rp => rp.CreatedAt).IsRequired();
-                entity.Property(rp => rp.CreatedBy).HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<Permission>(entity =>
-            {
-                entity.Property(p => p.Name).IsRequired();
-                entity.Property(p => p.Description).HasMaxLength(200);
-                entity.Property(p => p.Category).IsRequired();
-                entity.Property(p => p.IsSystem).IsRequired();
-            });
-
 
             modelBuilder.Entity<SystemAuditLog>(entity =>
             {

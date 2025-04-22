@@ -10,5 +10,6 @@ namespace Space_FaceID.Repositories
 {
     public interface IUserRepository : IGenericRepository<User>
     {
+        Task<List<User>> GetAllUserWithRoleAsync();
     }
 }

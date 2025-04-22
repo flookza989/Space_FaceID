@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Space_FaceID.Models.Entities
+namespace Space_FaceID.Models.Common
 {
     public class VerificationResult
     {

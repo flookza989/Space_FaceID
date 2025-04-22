@@ -20,7 +20,6 @@ namespace Space_FaceID.Views.Controls
             DataContext = viewModel;
 
             Loaded += EmployeeUserControl_Loaded;
-            Unloaded += EmployeeUserControl_Unloaded;
         }
 
         private async void EmployeeUserControl_Loaded(object sender, RoutedEventArgs e)
@@ -30,12 +29,6 @@ namespace Space_FaceID.Views.Controls
             {
                 await _viewModel.InitializeAsync();
             }
-        }
-
-        private void EmployeeUserControl_Unloaded(object sender, RoutedEventArgs e)
-        {
-            // ไม่ต้องเรียก Dispose ตอนเปลี่ยนหน้า เพราะจะเรียกตอนปิดโปรแกรมแทน
-            // _viewModel.Dispose();
         }
     }
 }

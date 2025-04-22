@@ -10,12 +10,9 @@ namespace Space_FaceID.Views.Controls.Dialogs
     /// </summary>
     public partial class UserEditDialogView : UserControl
     {
-        private readonly UserEditDialogViewModel _viewModel;
-
         public UserEditDialogView(UserEditDialogViewModel viewModel)
         {
             InitializeComponent();
-            _viewModel = viewModel;
             DataContext = viewModel;
         }
     }

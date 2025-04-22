@@ -12,11 +12,14 @@ namespace Space_FaceID.Services.Implementation
     public class UserService : GenericService<User>, IUserService
     {
         private readonly IUnitOfWorkRepository _unitOfWorkRepository;
-        public UserService(IUnitOfWorkRepository unitOfWorkRepository)
-            : base(unitOfWorkRepository.UserRepository)
+        public UserService(IUnitOfWorkRepository unitOfWorkRepository) : base(unitOfWorkRepository.UserRepository)
         {
             _unitOfWorkRepository = unitOfWorkRepository;
         }
 
+        public async Task<List<User>> GetAllUserWithRoleAsync()
+        {
+            return await _unitOfWorkRepository.UserRepository.GetAllUserWithRoleAsync();
+        }
     }
 }

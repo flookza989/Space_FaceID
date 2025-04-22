@@ -19,9 +19,6 @@ namespace Space_FaceID.Repositories.Interfaces
         IAuthenticationLogRepository AuthenticationLogRepository { get; }
         IFaceAuthenticationSettingRepository FaceAuthenticationSettingRepository { get; }
         ISystemAuditLogRepository SystemAuditLogRepository { get; }
-        IUserRoleRepository UserRoleRepository { get; }
         IRoleRepository RoleRepository { get; }
-        IPermissionRepository PermissionRepository { get; }
-        IRolePermissionRepository RolePermissionRepository { get; }
     }
 }

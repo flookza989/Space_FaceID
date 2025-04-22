@@ -208,7 +208,12 @@
                     <DataGrid
                         Margin="0,8,0,0"
                         AutoGenerateColumns="False"
+                        Background="{DynamicResource MaterialDesign.Brush.Primary.Dark.Foreground}"
+                        CellStyle="{StaticResource MaterialDesignDataGridCell}"
+                        Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}"
                         IsReadOnly="True"
+                        RowHeaderStyle="{StaticResource MaterialDesignDataGridRowHeader}"
+                        Style="{StaticResource MaterialDesignDataGrid}"
                         VerticalScrollBarVisibility="Auto">
                         <DataGrid.Columns>
                             <DataGridTextColumn
@@ -375,23 +380,26 @@
                                 <Button
                                     Grid.Column="0"
                                     Margin="0,0,4,0"
+                                    materialDesign:ElevationAssist.Elevation="Dp2"
                                     Command="{Binding ToggleCameraCommand}"
                                     Content="เปิด/ปิดกล้อง"
-                                    Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                    Style="{StaticResource MaterialDesignFlatLightBgButton}" />
 
                                 <Button
                                     Grid.Column="1"
                                     Margin="4,0,0,0"
+                                    materialDesign:ElevationAssist.Elevation="Dp2"
                                     Command="{Binding ConfigureDetectionCommand}"
                                     Content="ตั้งค่าด่วน"
-                                    Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                    Style="{StaticResource MaterialDesignFlatLightBgButton}" />
                             </Grid>
 
                             <Button
                                 Margin="0,8,0,0"
+                                materialDesign:ElevationAssist.Elevation="Dp2"
                                 Command="{Binding ManualRecordCommand}"
                                 Content="บันทึกด้วยตนเอง"
-                                Style="{StaticResource MaterialDesignRaisedButton}" />
+                                Style="{StaticResource MaterialDesignFlatLightBgButton}" />
                         </StackPanel>
                     </Grid>
                 </DockPanel>

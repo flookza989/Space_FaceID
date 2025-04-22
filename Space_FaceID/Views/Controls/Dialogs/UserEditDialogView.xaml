@@ -2,6 +2,7 @@
     x:Class="Space_FaceID.Views.Controls.Dialogs.UserEditDialogView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Space_FaceID.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Space_FaceID.Views.Controls.Dialogs"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
@@ -20,11 +21,20 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
+                <!--  Loading Indicator  -->
+                <controls:LoadingControl
+                    x:Name="LoadingControl"
+                    Grid.Row="0"
+                    Grid.RowSpan="3"
+                    Panel.ZIndex="9999"
+                    IsLoading="{Binding IsLoading}"
+                    LoadingMessage="{Binding LoadingMessage}" />
+
                 <!--  หัวข้อ  -->
                 <materialDesign:ColorZone
                     Grid.Row="0"
                     Padding="16"
-                    Mode="PrimaryMid">
+                    Mode="PrimaryLight">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon
                             Width="24"
@@ -36,7 +46,7 @@
                             VerticalAlignment="Center"
                             FontSize="18"
                             FontWeight="Medium"
-                            Text="{Binding DialogTitle}" />
+                            Text="แก้ไขข้อมูลพนักงาน" />
                     </StackPanel>
                 </materialDesign:ColorZone>
 
@@ -67,12 +77,12 @@
                                             VerticalAlignment="Center"
                                             Foreground="#BBBBBB"
                                             Kind="AccountCircle"
-                                            Visibility="{Binding ProfileImage, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" />
+                                            Visibility="{Binding IsHasImage, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" />
                                         <Border
                                             Width="150"
                                             Height="150"
                                             CornerRadius="75"
-                                            Visibility="{Binding ProfileImage, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            Visibility="{Binding IsHasImage, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <Border.Background>
                                                 <ImageBrush ImageSource="{Binding ProfileImage}" Stretch="UniformToFill" />
                                             </Border.Background>
@@ -82,15 +92,20 @@
 
                                 <Button
                                     Margin="0,0,0,8"
+                                    materialDesign:ElevationAssist.Elevation="Dp2"
                                     Command="{Binding BrowseImageCommand}"
                                     Content="เลือกรูปภาพ"
-                                    Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                    Style="{StaticResource MaterialDesignFlatLightBgButton}" />
 
                                 <Button
+                                    materialDesign:ElevationAssist.Elevation="Dp2"
+                                    Background="Crimson"
+                                    BorderBrush="Crimson"
                                     Command="{Binding RemoveImageCommand}"
                                     Content="ลบรูปภาพ"
+                                    Foreground="White"
                                     IsEnabled="{Binding ProfileImage, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                    Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                    Style="{StaticResource MaterialDesignFlatLightBgButton}" />
                             </StackPanel>
 
                             <!--  แบบฟอร์ม  -->
@@ -121,7 +136,7 @@
                                         Margin="0,0,8,16"
                                         materialDesign:HintAssist.Hint="ชื่อ"
                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                        Text="{Binding FirstName}" />
+                                        Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" />
 
                                     <TextBox
                                         Grid.Row="0"
@@ -129,7 +144,7 @@
                                         Margin="0,0,0,16"
                                         materialDesign:HintAssist.Hint="นามสกุล"
                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                        Text="{Binding LastName}" />
+                                        Text="{Binding LastName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                                     <!--  อีเมล-เบอร์โทร  -->
                                     <TextBox
@@ -202,19 +217,20 @@
                             Orientation="Horizontal">
                             <Button
                                 Margin="0,0,8,0"
+                                materialDesign:ElevationAssist.Elevation="Dp2"
+                                Background="Crimson"
+                                BorderBrush="Crimson"
                                 Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
                                 Content="ยกเลิก"
+                                Foreground="White"
                                 IsCancel="True"
-                                Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                Style="{StaticResource MaterialDesignFlatLightBgButton}" />
                             <Button
+                                materialDesign:ElevationAssist.Elevation="Dp2"
                                 Command="{Binding SaveCommand}"
                                 Content="บันทึก"
-                                IsDefault="True"
-                                Style="{StaticResource MaterialDesignRaisedButton}">
-                                <Button.CommandParameter>
-                                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">True</system:Boolean>
-                                </Button.CommandParameter>
-                            </Button>
+                                IsEnabled="{Binding IsDataChanged}"
+                                Style="{StaticResource MaterialDesignFlatLightBgButton}" />
                         </StackPanel>
 
                     </StackPanel>

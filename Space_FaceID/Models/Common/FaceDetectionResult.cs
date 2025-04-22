@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ViewFaceCore.Model;
 
-namespace Space_FaceID.Models.Entities
+namespace Space_FaceID.Models.Common
 {
     public class FaceDetectionResult
     {

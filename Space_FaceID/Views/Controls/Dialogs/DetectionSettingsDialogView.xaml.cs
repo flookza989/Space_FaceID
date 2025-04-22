@@ -20,18 +20,11 @@ namespace Space_FaceID.Views.Controls.Dialogs
             DataContext = viewModel;
 
             Loaded += DetectionSettingsDialogView_Loaded;
-            Unloaded += DetectionSettingsDialogView_Unloaded;
         }
 
         private async void DetectionSettingsDialogView_Loaded(object sender, RoutedEventArgs e)
         {
             await _viewModel.InitializeAsync();
-        }
-
-        private void DetectionSettingsDialogView_Unloaded(object sender, RoutedEventArgs e)
-        {
-            // ไม่ต้องเรียก Dispose ทุกครั้งที่ Unloaded เพราะเราจะเก็บ cache ไว้
-            // และจะ Dispose เฉพาะตอนปิดโปรแกรมเท่านั้น
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Space_FaceID.Helpers.Extensions;
+using Space_FaceID.Models.Common;
 using Space_FaceID.Models.Entities;
 using Space_FaceID.Repositories.Interfaces;
 using Space_FaceID.Services.Interfaces;

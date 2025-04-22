@@ -1,4 +1,4 @@
-﻿using Space_FaceID.Models.Entities;
+﻿using Space_FaceID.Models.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;

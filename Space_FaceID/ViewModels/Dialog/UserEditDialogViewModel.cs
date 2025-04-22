@@ -10,13 +10,28 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
+using System.ComponentModel;
+using Space_FaceID.Services.Interfaces;
+using Space_FaceID.Repositories.Interfaces;
+using MaterialDesignThemes.Wpf;
 
 namespace Space_FaceID.ViewModels.Dialog
 {
     public partial class UserEditDialogViewModel : ObservableObject
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IUserProfileRepository _userProfileRepository;
+        private readonly IUnitOfWorkRepository _unitOfWorkRepository;
+        private readonly IImageService _imageService;
+
+        private string? _originalFirstName;
+        private string? _originalLastName;
+        private string? _originalEmail;
+        private string? _originalPhoneNumber;
+        private DateTime? _originalDateOfBirth;
+        private string? _originalGender;
+        private string? _originalAddress;
+        private bool? _originalIsActive;
+        private byte[]? _originalProfilePicture;
+
 
         [ObservableProperty]
         private User? _user;
@@ -46,7 +61,7 @@ namespace Space_FaceID.ViewModels.Dialog
         private string? _address;
 
         [ObservableProperty]
-        private bool _isActive;
+        private bool? _isActive;
 
         [ObservableProperty]
         private byte[]? _profilePicture;
@@ -55,20 +70,32 @@ namespace Space_FaceID.ViewModels.Dialog
         private BitmapImage? _profileImage;
 
         [ObservableProperty]
-        private bool _isSaving = false;
+        private bool _isLoading = false;
 
         [ObservableProperty]
-        private string _dialogTitle = "แก้ไขข้อมูลพนักงาน";
+        private string _loadingMessage = string.Empty;
 
-        public bool HasChanges { get; private set; } = false;
+        [ObservableProperty]
+        private bool _isDataChanged = false;
 
-        public List<string> GenderOptions { get; } = new List<string> { "ชาย", "หญิง", "อื่นๆ" };
+        [ObservableProperty]
+        private bool _isHasImage = false;
 
-        public UserEditDialogViewModel(IUserRepository userRepository, IUserProfileRepository userProfileRepository)
+        public List<string> GenderOptions { get; } = ["ชาย", "หญิง", "อื่นๆ"];
+
+        public UserEditDialogViewModel(IUnitOfWorkRepository unitOfWorkRepository,
+            IImageService imageService)
         {
-            _userRepository = userRepository;
-            _userProfileRepository = userProfileRepository;
+            _unitOfWorkRepository = unitOfWorkRepository ?? throw new ArgumentNullException(nameof(unitOfWorkRepository));
+            _imageService = imageService ?? throw new ArgumentNullException(nameof(imageService));
         }
+
+        private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            CheckForChanges();
+        }
+
+        partial void OnProfileImageChanged(BitmapImage? value) => IsHasImage = value != null;
 
         public void LoadUserData(User user, UserProfile? userProfile)
         {
@@ -91,10 +118,23 @@ namespace Space_FaceID.ViewModels.Dialog
             // แสดงรูปโปรไฟล์
             if (ProfilePicture != null)
             {
-                ProfileImage = ByteArrayToBitmapImage(ProfilePicture);
+                ProfileImage = _imageService.ByteArrayToBitmapImage(ProfilePicture);
             }
 
-            HasChanges = false;
+            // เก็บค่าเริ่มต้นเพื่อตรวจสอบการเปลี่ยนแปลง
+            _originalFirstName = FirstName;
+            _originalLastName = LastName;
+            _originalEmail = Email;
+            _originalPhoneNumber = PhoneNumber;
+            _originalDateOfBirth = DateOfBirth;
+            _originalGender = Gender;
+            _originalAddress = Address;
+            _originalIsActive = IsActive;
+            _originalProfilePicture = ProfilePicture;
+
+
+
+            PropertyChanged += OnPropertyChanged;
         }
 
         [RelayCommand]
@@ -113,14 +153,15 @@ namespace Space_FaceID.ViewModels.Dialog
                 {
                     // อ่านไฟล์รูปภาพ
                     byte[] imageData = File.ReadAllBytes(openFileDialog.FileName);
-                    
+
                     // กำหนดค่า ProfilePicture
                     ProfilePicture = imageData;
-                    
+
                     // แสดงรูปภาพ
-                    ProfileImage = ByteArrayToBitmapImage(ProfilePicture);
-                    
-                    HasChanges = true;
+                    ProfileImage = _imageService.ByteArrayToBitmapImage(ProfilePicture);
+
+                    // ตรวจสอบการเปลี่ยนแปลงหลังจากเลือกรูปภาพ
+                    CheckForChanges();
                 }
                 catch (Exception ex)
                 {
@@ -134,7 +175,8 @@ namespace Space_FaceID.ViewModels.Dialog
         {
             ProfilePicture = null;
             ProfileImage = null;
-            HasChanges = true;
+
+            CheckForChanges();
         }
 
         [RelayCommand]
@@ -142,12 +184,13 @@ namespace Space_FaceID.ViewModels.Dialog
         {
             if (User == null || UserProfile == null) return;
 
-            IsSaving = true;
+            IsLoading = true;
+            LoadingMessage = "กำลังบันทึกข้อมูล...";
             try
             {
                 // อัพเดทข้อมูลผู้ใช้
                 User.Email = Email;
-                User.IsActive = IsActive;
+                User.IsActive = IsActive ?? false;
 
                 // อัพเดทข้อมูลโปรไฟล์
                 UserProfile.FirstName = FirstName;
@@ -159,20 +202,22 @@ namespace Space_FaceID.ViewModels.Dialog
                 UserProfile.ProfilePicture = ProfilePicture;
 
                 // บันทึกข้อมูลผู้ใช้
-                await _userRepository.UpdateAsync(User);
+                await _unitOfWorkRepository.UserRepository.UpdateAsync(User);
 
                 // บันทึกข้อมูลโปรไฟล์
                 if (UserProfile.Id == 0) // กรณีเป็นโปรไฟล์ใหม่
                 {
-                    await _userProfileRepository.AddAsync(UserProfile);
+                    await _unitOfWorkRepository.UserProfileRepository.AddAsync(UserProfile);
                 }
                 else
                 {
-                    await _userProfileRepository.UpdateAsync(UserProfile);
+                    await _unitOfWorkRepository.UserProfileRepository.UpdateAsync(UserProfile);
                 }
 
-                HasChanges = false;
                 MessageBox.Show("บันทึกข้อมูลเรียบร้อย", "สำเร็จ", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                // ปิด Dialog โดยส่งค่า true กลับ (บันทึกสำเร็จ)
+                DialogHost.Close("RootDialog", true);
             }
             catch (Exception ex)
             {
@@ -180,41 +225,22 @@ namespace Space_FaceID.ViewModels.Dialog
             }
             finally
             {
-                IsSaving = false;
+                IsLoading = false;
             }
         }
 
-        private BitmapImage? ByteArrayToBitmapImage(byte[]? byteArray)
+        private void CheckForChanges()
         {
-            if (byteArray == null || byteArray.Length == 0) return null;
-
-            try
-            {
-                using (MemoryStream stream = new MemoryStream(byteArray))
-                {
-                    BitmapImage image = new BitmapImage();
-                    image.BeginInit();
-                    image.CacheOption = BitmapCacheOption.OnLoad;
-                    image.StreamSource = stream;
-                    image.EndInit();
-                    image.Freeze(); // ทำให้ thread-safe
-                    return image;
-                }
-            }
-            catch
-            {
-                return null;
-            }
+            IsDataChanged =
+                FirstName != _originalFirstName ||
+                LastName != _originalLastName ||
+                Email != _originalEmail ||
+                PhoneNumber != _originalPhoneNumber ||
+                DateOfBirth != _originalDateOfBirth ||
+                Gender != _originalGender ||
+                Address != _originalAddress ||
+                IsActive != _originalIsActive ||
+                ProfilePicture != _originalProfilePicture;
         }
-
-        // ตรวจจับการเปลี่ยนแปลงข้อมูล
-        partial void OnFirstNameChanged(string? value) => HasChanges = true;
-        partial void OnLastNameChanged(string? value) => HasChanges = true;
-        partial void OnEmailChanged(string? value) => HasChanges = true;
-        partial void OnPhoneNumberChanged(string? value) => HasChanges = true;
-        partial void OnDateOfBirthChanged(DateTime? value) => HasChanges = true;
-        partial void OnGenderChanged(string? value) => HasChanges = true;
-        partial void OnAddressChanged(string? value) => HasChanges = true;
-        partial void OnIsActiveChanged(bool value) => HasChanges = true;
     }
 }

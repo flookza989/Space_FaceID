@@ -35,101 +35,112 @@
         <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}">
             <!--  เมนูด้านซ้าย (Navigation Drawer)  -->
             <materialDesign:DrawerHost.LeftDrawerContent>
-                <DockPanel MinWidth="220">
-                    <materialDesign:ColorZone
-                        Padding="16"
-                        DockPanel.Dock="Top"
-                        Mode="PrimaryMid">
-                        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                            <materialDesign:PackIcon
-                                Width="24"
-                                Height="24"
-                                Margin="0,0,10,0"
-                                VerticalAlignment="Center"
-                                Kind="Security" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                FontSize="18"
-                                FontWeight="Bold"
-                                Text="เมนูหลัก" />
-                        </StackPanel>
-                    </materialDesign:ColorZone>
+                <DockPanel MinWidth="250">
+                    <StackPanel Orientation="Vertical">
+                        <materialDesign:ColorZone
+                            Padding="16"
+                            DockPanel.Dock="Top"
+                            Mode="PrimaryLight">
+                            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                <materialDesign:PackIcon
+                                    Width="24"
+                                    Height="24"
+                                    Margin="0,0,10,0"
+                                    VerticalAlignment="Center"
+                                    Kind="HamburgerMenu" />
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="18"
+                                    FontWeight="Bold"
+                                    Text="เมนู" />
+                            </StackPanel>
+                        </materialDesign:ColorZone>
 
-                    <ListBox x:Name="MenuListBox" Margin="0,16,0,16">
-                        <ListBoxItem x:Name="DashboardItem" IsSelected="True">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon
-                                    Width="24"
-                                    Height="24"
-                                    Margin="0,0,10,0"
-                                    VerticalAlignment="Center"
-                                    Kind="ViewDashboard" />
-                                <TextBlock VerticalAlignment="Center" Text="แดชบอร์ด" />
-                            </StackPanel>
-                        </ListBoxItem>
-                        <ListBoxItem x:Name="AccessListItem">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon
-                                    Width="24"
-                                    Height="24"
-                                    Margin="0,0,10,0"
-                                    VerticalAlignment="Center"
-                                    Kind="ClipboardList" />
-                                <TextBlock VerticalAlignment="Center" Text="ประวัติการเข้าออก" />
-                            </StackPanel>
-                        </ListBoxItem>
-                        <ListBoxItem x:Name="EmployeesItem">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon
-                                    Width="24"
-                                    Height="24"
-                                    Margin="0,0,10,0"
-                                    VerticalAlignment="Center"
-                                    Kind="AccountMultiple" />
-                                <TextBlock VerticalAlignment="Center" Text="ข้อมูลพนักงาน" />
-                            </StackPanel>
-                        </ListBoxItem>
-                        <ListBoxItem x:Name="DevicesItem">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon
-                                    Width="24"
-                                    Height="24"
-                                    Margin="0,0,10,0"
-                                    VerticalAlignment="Center"
-                                    Kind="ImportantDevices" />
-                                <TextBlock VerticalAlignment="Center" Text="อุปกรณ์เข้าออก" />
-                            </StackPanel>
-                        </ListBoxItem>
-                        <ListBoxItem x:Name="ReportsItem">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon
-                                    Width="24"
-                                    Height="24"
-                                    Margin="0,0,10,0"
-                                    VerticalAlignment="Center"
-                                    Kind="FileChart" />
-                                <TextBlock VerticalAlignment="Center" Text="รายงาน" />
-                            </StackPanel>
-                        </ListBoxItem>
-                        <ListBoxItem x:Name="SettingsItem">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon
-                                    Width="24"
-                                    Height="24"
-                                    Margin="0,0,10,0"
-                                    VerticalAlignment="Center"
-                                    Kind="Settings" />
-                                <TextBlock VerticalAlignment="Center" Text="ตั้งค่าระบบ" />
-                            </StackPanel>
-                        </ListBoxItem>
-                    </ListBox>
-
-                    <StackPanel Margin="16" DockPanel.Dock="Bottom">
-                        <Button
-                            Margin="0,8,0,0"
-                            Content="ออกจากระบบ"
-                            Style="{StaticResource MaterialDesignOutlinedButton}" />
+                        <ListBox x:Name="MenuListBox" Margin="0,16,0,16">
+                            <ListBoxItem x:Name="DashboardItem" IsSelected="True">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon
+                                        Width="24"
+                                        Height="24"
+                                        Margin="0,0,10,0"
+                                        VerticalAlignment="Center"
+                                        Kind="ViewDashboard" />
+                                    <TextBlock VerticalAlignment="Center" Text="แดชบอร์ด" />
+                                </StackPanel>
+                            </ListBoxItem>
+                            <ListBoxItem x:Name="AccessListItem">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon
+                                        Width="24"
+                                        Height="24"
+                                        Margin="0,0,10,0"
+                                        VerticalAlignment="Center"
+                                        Kind="ClipboardList" />
+                                    <TextBlock VerticalAlignment="Center" Text="ประวัติการเข้าออก" />
+                                </StackPanel>
+                            </ListBoxItem>
+                            <ListBoxItem x:Name="EmployeesItem">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon
+                                        Width="24"
+                                        Height="24"
+                                        Margin="0,0,10,0"
+                                        VerticalAlignment="Center"
+                                        Kind="AccountMultiple" />
+                                    <TextBlock VerticalAlignment="Center" Text="ข้อมูลพนักงาน" />
+                                </StackPanel>
+                            </ListBoxItem>
+                            <ListBoxItem x:Name="DevicesItem">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon
+                                        Width="24"
+                                        Height="24"
+                                        Margin="0,0,10,0"
+                                        VerticalAlignment="Center"
+                                        Kind="ImportantDevices" />
+                                    <TextBlock VerticalAlignment="Center" Text="อุปกรณ์เข้าออก" />
+                                </StackPanel>
+                            </ListBoxItem>
+                            <ListBoxItem x:Name="ReportsItem">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon
+                                        Width="24"
+                                        Height="24"
+                                        Margin="0,0,10,0"
+                                        VerticalAlignment="Center"
+                                        Kind="FileChart" />
+                                    <TextBlock VerticalAlignment="Center" Text="รายงาน" />
+                                </StackPanel>
+                            </ListBoxItem>
+                            <ListBoxItem x:Name="SettingsItem">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon
+                                        Width="24"
+                                        Height="24"
+                                        Margin="0,0,10,0"
+                                        VerticalAlignment="Center"
+                                        Kind="Settings" />
+                                    <TextBlock VerticalAlignment="Center" Text="ตั้งค่าระบบ" />
+                                </StackPanel>
+                            </ListBoxItem>
+                            <ListBoxItem x:Name="ExitItem">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon
+                                        Width="24"
+                                        Height="24"
+                                        Margin="0,0,10,0"
+                                        VerticalAlignment="Center"
+                                        Foreground="Crimson"
+                                        Kind="ExitToApp" />
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        Foreground="Crimson"
+                                        Text="ออกระบบ" />
+                                </StackPanel>
+                            </ListBoxItem>
+                        </ListBox>
                     </StackPanel>
+
                 </DockPanel>
             </materialDesign:DrawerHost.LeftDrawerContent>
 
@@ -140,7 +151,7 @@
                     Padding="16"
                     materialDesign:ElevationAssist.Elevation="Dp2"
                     DockPanel.Dock="Top"
-                    Mode="PrimaryMid">
+                    Mode="PrimaryLight">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />

@@ -26,20 +26,20 @@
                 </Grid.RowDefinitions>
 
                 <!--  Loading Indicator  -->
-                <controls:LoadingControl
+                <!--<controls:LoadingControl
                     x:Name="LoadingControl"
                     Grid.Row="0"
                     Grid.RowSpan="3"
                     Panel.ZIndex="9999"
                     IsLoading="{Binding IsLoading}"
-                    LoadingMessage="{Binding LoadingMessage}" />
+                    LoadingMessage="{Binding LoadingMessage}" />-->
 
                 <!--  หัวข้อ  -->
                 <materialDesign:ColorZone
                     x:Name="HeaderZone"
                     Grid.Row="0"
                     Padding="16"
-                    Mode="PrimaryMid">
+                    Mode="PrimaryLight">
                     <StackPanel x:Name="HeaderPanel" Orientation="Horizontal">
                         <materialDesign:PackIcon
                             x:Name="HeaderIcon"
@@ -314,28 +314,30 @@
                             <Button
                                 x:Name="ResetButton"
                                 Margin="0,0,8,0"
+                                materialDesign:ElevationAssist.Elevation="Dp2"
                                 Command="{Binding ResetCommand}"
                                 Content="รีเซ็ตค่าเริ่มต้น"
-                                Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                Style="{StaticResource MaterialDesignFlatLightBgButton}" />
                             <Button
                                 x:Name="CancelButton"
                                 Margin="0,0,8,0"
+                                materialDesign:ElevationAssist.Elevation="Dp2"
+                                Background="Crimson"
+                                BorderBrush="Crimson"
                                 Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
                                 Content="ยกเลิก"
+                                Foreground="White"
                                 IsCancel="True"
-                                Style="{StaticResource MaterialDesignOutlinedButton}">
-                                <Button.CommandParameter>
-                                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">False</system:Boolean>
-                                </Button.CommandParameter>
-                            </Button>
+                                Style="{StaticResource MaterialDesignFlatLightBgButton}" />
                             <Button
                                 x:Name="SaveButton"
                                 Margin="0,0,0,0"
+                                materialDesign:ElevationAssist.Elevation="Dp2"
                                 Command="{Binding SaveCommand}"
                                 Content="บันทึก"
                                 IsDefault="True"
                                 IsEnabled="{Binding IsDataChanged}"
-                                Style="{StaticResource MaterialDesignRaisedButton}" />
+                                Style="{StaticResource MaterialDesignFlatLightBgButton}" />
                         </StackPanel>
                     </StackPanel>
                 </materialDesign:Card>

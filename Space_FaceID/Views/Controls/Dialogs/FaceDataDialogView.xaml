@@ -1,0 +1,205 @@
+﻿<UserControl
+    x:Class="Space_FaceID.Views.Controls.Dialogs.FaceDataDialogView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Space_FaceID.Views.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Space_FaceID.Views.Controls.Dialogs"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Space_FaceID.ViewModels.Dialog"
+    Width="800"
+    Height="600"
+    d:DataContext="{d:DesignInstance Type=vm:FaceDataDialogViewModel}"
+    mc:Ignorable="d">
+
+    <materialDesign:DialogHost CloseOnClickAway="False" DialogTheme="Inherit">
+        <materialDesign:Card>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!--  Loading Indicator  -->
+                <!--<controls:LoadingControl
+                    x:Name="LoadingControl"
+                    Grid.Row="0"
+                    Grid.RowSpan="3"
+                    Panel.ZIndex="9999"
+                    IsLoading="{Binding IsLoading}"
+                    LoadingMessage="{Binding LoadingMessage}" />-->
+
+                <!--  หัวข้อ  -->
+                <materialDesign:ColorZone
+                    Grid.Row="0"
+                    Padding="16"
+                    Mode="PrimaryMid">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon
+                            Width="24"
+                            Height="24"
+                            Margin="0,0,8,0"
+                            VerticalAlignment="Center"
+                            Kind="Face" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="18"
+                            FontWeight="Medium"
+                            Text="เพิ่มข้อมูลใบหน้าใหม่" />
+                    </StackPanel>
+                </materialDesign:ColorZone>
+
+                <!--  เนื้อหา  -->
+                <materialDesign:Card Grid.Row="1" Padding="16">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!--  ส่วนแสดงภาพจากกล้อง  -->
+                        <Border
+                            Grid.Column="0"
+                            Margin="0,0,8,0"
+                            BorderBrush="#DDDDDD"
+                            BorderThickness="1"
+                            CornerRadius="4">
+                            <Grid>
+                                <!--  แสดงเมื่อยังไม่ได้เปิดกล้อง  -->
+                                <StackPanel
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding IsCameraActive, Converter={StaticResource InvertedBooleanToVisibilityConverter}}">
+                                    <materialDesign:PackIcon
+                                        Width="48"
+                                        Height="48"
+                                        HorizontalAlignment="Center"
+                                        Foreground="#BBBBBB"
+                                        Kind="CameraOff" />
+                                    <TextBlock
+                                        Margin="0,8,0,0"
+                                        HorizontalAlignment="Center"
+                                        Foreground="#555555"
+                                        Text="ยังไม่ได้เปิดกล้อง" />
+
+                                    <!--  เลือกกล้อง  -->
+                                    <StackPanel Margin="0,16,0,0">
+                                        <TextBlock Margin="0,0,0,8" Text="เลือกกล้อง:" />
+                                        <ComboBox
+                                            MinWidth="200"
+                                            Margin="0,0,0,16"
+                                            materialDesign:HintAssist.Hint="เลือกกล้อง"
+                                            DisplayMemberPath="."
+                                            ItemsSource="{Binding AvailableCameras}"
+                                            SelectedIndex="{Binding SelectedCameraIndex}" />
+
+                                        <Button Command="{Binding StartCameraCommand}" Content="เปิดกล้อง" />
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!--  แสดงภาพจากกล้อง  -->
+                                <Image
+                                    Source="{Binding CameraPreview}"
+                                    Stretch="Uniform"
+                                    Visibility="{Binding IsCameraActive, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                                <!--  ปุ่มควบคุมกล้อง  -->
+                                <StackPanel
+                                    Margin="0,0,0,16"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Bottom"
+                                    Orientation="Horizontal"
+                                    Visibility="{Binding IsCameraActive, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <Button
+                                        Margin="0,0,8,0"
+                                        Command="{Binding CaptureImageCommand}"
+                                        Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
+                                        <materialDesign:PackIcon Kind="Camera" />
+                                    </Button>
+                                    <Button Command="{Binding StopCameraCommand}" Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
+                                        <materialDesign:PackIcon Kind="Stop" />
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!--  ส่วนแสดงภาพที่ถ่ายได้  -->
+                        <Border
+                            Grid.Column="1"
+                            Margin="8,0,0,0"
+                            BorderBrush="#DDDDDD"
+                            BorderThickness="1"
+                            CornerRadius="4">
+                            <Grid>
+                                <!--  แสดงเมื่อยังไม่ได้ถ่ายภาพ  -->
+                                <StackPanel
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Visibility="{Binding IsFaceCaptured, Converter={StaticResource InvertedBooleanToVisibilityConverter}}">
+                                    <materialDesign:PackIcon
+                                        Width="48"
+                                        Height="48"
+                                        HorizontalAlignment="Center"
+                                        Foreground="#BBBBBB"
+                                        Kind="FaceRecognition" />
+                                    <TextBlock
+                                        Margin="0,8,0,0"
+                                        HorizontalAlignment="Center"
+                                        Foreground="#555555"
+                                        Text="ยังไม่ได้ถ่ายภาพใบหน้า" />
+                                    <TextBlock
+                                        Margin="0,8,0,0"
+                                        HorizontalAlignment="Center"
+                                        Foreground="#777777"
+                                        Text="กดปุ่มถ่ายภาพเพื่อถ่ายภาพใบหน้า"
+                                        TextWrapping="Wrap" />
+                                </StackPanel>
+
+                                <!--  แสดงภาพที่ถ่ายได้  -->
+                                <StackPanel Visibility="{Binding IsFaceCaptured, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <TextBlock
+                                        Margin="8,8,0,8"
+                                        FontWeight="Medium"
+                                        Text="ภาพที่ถ่ายได้:" />
+                                    <Image
+                                        Margin="0,0,0,16"
+                                        Source="{Binding CapturedFace}"
+                                        Stretch="Uniform" />
+
+                                    <Button
+                                        Margin="8,0,0,8"
+                                        HorizontalAlignment="Center"
+                                        Command="{Binding RetakeImageCommand}"
+                                        Content="ถ่ายใหม่"
+                                        Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </materialDesign:Card>
+
+                <!--  ปุ่มดำเนินการ  -->
+                <StackPanel
+                    Grid.Row="2"
+                    Margin="16"
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal">
+                    <Button
+                        Margin="0,0,8,0"
+                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                        Content="ยกเลิก"
+                        IsCancel="True"
+                        Style="{StaticResource MaterialDesignOutlinedButton}" />
+                    <Button
+                        Command="{Binding SaveCommand}"
+                        Content="บันทึก"
+                        IsDefault="True"
+                        IsEnabled="{Binding CanSave}"
+                        Style="{StaticResource MaterialDesignRaisedButton}" />
+                </StackPanel>
+            </Grid>
+        </materialDesign:Card>
+    </materialDesign:DialogHost>
+</UserControl>
