@@ -9,6 +9,7 @@ namespace Space_FaceID.Services.Interfaces
 {
     public interface IUserService : IGenericService<User>
     {
-        Task<List<User>> GetAllUserWithRoleAsync();
+        Task<List<User>> GetAllUserWithFullAsync();
+        Task<User?> GetUserWithFullByUserIdAsync(int userId);
     }
 }

@@ -272,12 +272,8 @@
                                     Grid.Row="0"
                                     Grid.Column="1"
                                     Margin="0,0,32,8">
-                                    <TextBlock.Text>
-                                        <MultiBinding StringFormat="{}{0} {1}">
-                                            <Binding Path="SelectedEmployeeProfile.FirstName" />
-                                            <Binding Path="SelectedEmployeeProfile.LastName" />
-                                        </MultiBinding>
-                                    </TextBlock.Text>
+                                    <Run Text="{Binding SelectedEmployee.Profile.FirstName}" />
+                                    <Run Text="{Binding SelectedEmployee.Profile.LastName}" />
                                 </TextBlock>
 
                                 <TextBlock
@@ -306,7 +302,7 @@
                                     Grid.Row="2"
                                     Grid.Column="1"
                                     Margin="0,0,32,8"
-                                    Text="{Binding SelectedEmployeeProfile.PhoneNumber}" />
+                                    Text="{Binding SelectedEmployee.Profile.PhoneNumber}" />
 
                                 <TextBlock
                                     x:Name="AddressLabel"
@@ -321,7 +317,7 @@
                                     Grid.Column="1"
                                     Grid.ColumnSpan="4"
                                     Margin="0,0,32,8"
-                                    Text="{Binding SelectedEmployeeProfile.Address}"
+                                    Text="{Binding SelectedEmployee.Profile.Address}"
                                     TextWrapping="Wrap" />
                                 <TextBlock
                                     x:Name="StatusLabel"
@@ -359,7 +355,7 @@
                                     Grid.Row="0"
                                     Grid.Column="3"
                                     Margin="0,0,0,8"
-                                    Text="{Binding SelectedEmployeeProfile.DateOfBirth, StringFormat=dd/MM/yyyy}" />
+                                    Text="{Binding SelectedEmployee.Profile.DateOfBirth, StringFormat=dd/MM/yyyy}" />
 
                                 <TextBlock
                                     x:Name="GenderLabel"
@@ -373,7 +369,7 @@
                                     Grid.Row="1"
                                     Grid.Column="3"
                                     Margin="0,0,0,8"
-                                    Text="{Binding SelectedEmployeeProfile.Gender}" />
+                                    Text="{Binding SelectedEmployee.Profile.Gender}" />
 
                                 <TextBlock
                                     x:Name="LastLoginLabel"
@@ -414,8 +410,8 @@
                                     Command="{Binding DeleteEmployeeCommand}"
                                     Content="ลบพนักงาน"
                                     Foreground="White"
-                                    IsEnabled="{Binding IsAdmin}"
-                                    Style="{StaticResource MaterialDesignFlatLightBgButton}" />
+                                    Style="{StaticResource MaterialDesignFlatLightBgButton}"
+                                    Visibility="{Binding IsAdmin, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" />
                             </StackPanel>
                         </StackPanel>
                     </Grid>

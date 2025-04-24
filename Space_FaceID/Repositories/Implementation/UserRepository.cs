@@ -18,14 +18,24 @@ namespace Space_FaceID.Repositories.Implementation
             _contextFactory = contextFactory;
         }
 
-        public async Task<List<User>> GetAllUserWithRoleAsync()
+        public async Task<List<User>> GetAllUserWithFullAsync()
         {
             using var context = _contextFactory.CreateDbContext();
             return await context.Users
+                .Include(u => u.Profile)
                 .Include(u => u.Role)
+                .Include(u => u.FaceDatas)
                 .ToListAsync();
         }
 
-
+        public async Task<User?> GetUserWithFullByUserIdAsync(int userId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            return await context.Users
+                .Include(u => u.Profile)
+                .Include(u => u.Role)
+                .Include(u => u.FaceDatas)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+        }
     }
 }

@@ -17,10 +17,12 @@ using MaterialDesignThemes.Wpf;
 
 namespace Space_FaceID.ViewModels.Dialog
 {
-    public partial class UserEditDialogViewModel : ObservableObject
+    public partial class UserEditDialogViewModel(
+        IUserService userService,
+        IImageService imageService) : ObservableObject
     {
-        private readonly IUnitOfWorkRepository _unitOfWorkRepository;
-        private readonly IImageService _imageService;
+        private readonly IUserService _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+        private readonly IImageService _imageService = imageService ?? throw new ArgumentNullException(nameof(imageService));
 
         private string? _originalFirstName;
         private string? _originalLastName;
@@ -35,9 +37,6 @@ namespace Space_FaceID.ViewModels.Dialog
 
         [ObservableProperty]
         private User? _user;
-
-        [ObservableProperty]
-        private UserProfile? _userProfile;
 
         [ObservableProperty]
         private string? _firstName;
@@ -83,13 +82,6 @@ namespace Space_FaceID.ViewModels.Dialog
 
         public List<string> GenderOptions { get; } = ["ชาย", "หญิง", "อื่นๆ"];
 
-        public UserEditDialogViewModel(IUnitOfWorkRepository unitOfWorkRepository,
-            IImageService imageService)
-        {
-            _unitOfWorkRepository = unitOfWorkRepository ?? throw new ArgumentNullException(nameof(unitOfWorkRepository));
-            _imageService = imageService ?? throw new ArgumentNullException(nameof(imageService));
-        }
-
         private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             CheckForChanges();
@@ -97,23 +89,22 @@ namespace Space_FaceID.ViewModels.Dialog
 
         partial void OnProfileImageChanged(BitmapImage? value) => IsHasImage = value != null;
 
-        public void LoadUserData(User user, UserProfile? userProfile)
+        public void LoadUserData(User user)
         {
             User = user;
-            UserProfile = userProfile ?? new UserProfile { UserId = user.Id };
 
             // กำหนดค่าเริ่มต้นจากข้อมูลผู้ใช้
             Email = user.Email;
             IsActive = user.IsActive;
 
             // กำหนดค่าเริ่มต้นจากข้อมูลโปรไฟล์
-            FirstName = userProfile?.FirstName;
-            LastName = userProfile?.LastName;
-            PhoneNumber = userProfile?.PhoneNumber;
-            DateOfBirth = userProfile?.DateOfBirth;
-            Gender = userProfile?.Gender;
-            Address = userProfile?.Address;
-            ProfilePicture = userProfile?.ProfilePicture;
+            FirstName = user.Profile.FirstName;
+            LastName = user.Profile.LastName;
+            PhoneNumber = user.Profile.PhoneNumber;
+            DateOfBirth = user.Profile.DateOfBirth;
+            Gender = user.Profile.Gender;
+            Address = user.Profile.Address;
+            ProfilePicture = user.Profile.ProfilePicture;
 
             // แสดงรูปโปรไฟล์
             if (ProfilePicture != null)
@@ -182,7 +173,7 @@ namespace Space_FaceID.ViewModels.Dialog
         [RelayCommand]
         private async Task SaveAsync()
         {
-            if (User == null || UserProfile == null) return;
+            if (User == null) return;
 
             IsLoading = true;
             LoadingMessage = "กำลังบันทึกข้อมูล...";
@@ -193,26 +184,16 @@ namespace Space_FaceID.ViewModels.Dialog
                 User.IsActive = IsActive ?? false;
 
                 // อัพเดทข้อมูลโปรไฟล์
-                UserProfile.FirstName = FirstName;
-                UserProfile.LastName = LastName;
-                UserProfile.PhoneNumber = PhoneNumber;
-                UserProfile.DateOfBirth = DateOfBirth;
-                UserProfile.Gender = Gender;
-                UserProfile.Address = Address;
-                UserProfile.ProfilePicture = ProfilePicture;
+                User.Profile.FirstName = FirstName;
+                User.Profile.LastName = LastName;
+                User.Profile.PhoneNumber = PhoneNumber;
+                User.Profile.DateOfBirth = DateOfBirth;
+                User.Profile.Gender = Gender;
+                User.Profile.Address = Address;
+                User.Profile.ProfilePicture = ProfilePicture;
 
                 // บันทึกข้อมูลผู้ใช้
-                await _unitOfWorkRepository.UserRepository.UpdateAsync(User);
-
-                // บันทึกข้อมูลโปรไฟล์
-                if (UserProfile.Id == 0) // กรณีเป็นโปรไฟล์ใหม่
-                {
-                    await _unitOfWorkRepository.UserProfileRepository.AddAsync(UserProfile);
-                }
-                else
-                {
-                    await _unitOfWorkRepository.UserProfileRepository.UpdateAsync(UserProfile);
-                }
+                var RowAffectedUpdateUser = await _userService.UpdateAsync(User);
 
                 MessageBox.Show("บันทึกข้อมูลเรียบร้อย", "สำเร็จ", MessageBoxButton.OK, MessageBoxImage.Information);
 

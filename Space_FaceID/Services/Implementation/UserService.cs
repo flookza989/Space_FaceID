@@ -17,9 +17,14 @@ namespace Space_FaceID.Services.Implementation
             _unitOfWorkRepository = unitOfWorkRepository;
         }
 
-        public async Task<List<User>> GetAllUserWithRoleAsync()
+        public async Task<List<User>> GetAllUserWithFullAsync()
         {
-            return await _unitOfWorkRepository.UserRepository.GetAllUserWithRoleAsync();
+            return await _unitOfWorkRepository.UserRepository.GetAllUserWithFullAsync();
+        }
+
+        public async Task<User?> GetUserWithFullByUserIdAsync(int userId)
+        {
+            return await _unitOfWorkRepository.UserRepository.GetUserWithFullByUserIdAsync(userId);
         }
     }
 }

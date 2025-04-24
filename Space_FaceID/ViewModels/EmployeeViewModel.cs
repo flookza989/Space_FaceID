@@ -22,16 +22,20 @@ using Space_FaceID.Views.Controls.Dialogs;
 using MaterialDesignThemes.Wpf;
 using Space_FaceID.Services.Interfaces;
 using Space_FaceID.Models.Enums;
+using Space_FaceID.Services.Implementation;
 
 namespace Space_FaceID.ViewModels
 {
-    public partial class EmployeeViewModel : ObservableObject, IDisposable
+    public partial class EmployeeViewModel(
+        IUserService userService,
+        IFaceDataService faceDataService,
+        IServiceProvider serviceProvider,
+        IImageService imageService) : ObservableObject, IDisposable
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IUserProfileRepository _userProfileRepository;
-        private readonly IFaceDataRepository _faceDataRepository;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IImageService _imageService;
+        private readonly IUserService _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+        private readonly IFaceDataService _faceDataService = faceDataService ?? throw new ArgumentNullException(nameof(faceDataService));
+        private readonly IServiceProvider _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+        private readonly IImageService _imageService = imageService ?? throw new ArgumentNullException(nameof(imageService));
 
         [ObservableProperty]
         private ObservableCollection<User> _employees = [];
@@ -44,9 +48,6 @@ namespace Space_FaceID.ViewModels
 
         [ObservableProperty]
         private bool _isFaceDataSelected = false;
-
-        [ObservableProperty]
-        private UserProfile? _selectedEmployeeProfile;
 
         [ObservableProperty]
         private ObservableCollection<FaceData> _employeeFaceData = [];
@@ -75,20 +76,6 @@ namespace Space_FaceID.ViewModels
         [ObservableProperty]
         private bool _isAdmin = false;
 
-
-        public EmployeeViewModel(IUserRepository userRepository,
-                                 IUserProfileRepository userProfileRepository,
-                                 IFaceDataRepository faceDataRepository,
-                                 IServiceProvider serviceProvider,
-                                 IImageService imageService)
-        {
-            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-            _userProfileRepository = userProfileRepository ?? throw new ArgumentNullException(nameof(userProfileRepository));
-            _faceDataRepository = faceDataRepository ?? throw new ArgumentNullException(nameof(faceDataRepository));
-            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-            _imageService = imageService ?? throw new ArgumentNullException(nameof(imageService));
-        }
-
         public async Task InitializeAsync()
         {
             IsLoading = true;
@@ -108,13 +95,10 @@ namespace Space_FaceID.ViewModels
             try
             {
                 LoadingMessage = "กำลังโหลดข้อมูลพนักงานทั้งหมด...";
-                var users = await _userRepository.GetAllUserWithRoleAsync();
-                Employees.Clear();
+                var users = await _userService.GetAllUserWithFullAsync();
 
-                foreach (var user in users)
-                {
-                    Employees.Add(user);
-                }
+                Employees.Clear();
+                Employees = [.. users];
             }
             catch (Exception ex)
             {
@@ -129,7 +113,7 @@ namespace Space_FaceID.ViewModels
             if (SelectedEmployee == null) return;
 
             IsAdmin = SelectedEmployee.Role != null && SelectedEmployee.Role.Name == RoleName.Admin.ToString();
-            LoadEmployeeDetailsAsync().ConfigureAwait(false);
+            LoadEmployeeDetails();
         }
 
         partial void OnSelectedFaceChanged(FaceData? value)
@@ -145,23 +129,16 @@ namespace Space_FaceID.ViewModels
             FilterEmployees();
         }
 
-        private async Task LoadEmployeeDetails(int userId)
+        private void LoadEmployeeDetails()
         {
             IsLoading = true;
             try
             {
-                // โหลดข้อมูลโปรไฟล์
-                LoadingMessage = "กำลังโหลดข้อมูลของพนักงานที่เลือก...";
-                SelectedEmployeeProfile = await _userProfileRepository.GetUserProfileByUserIdAsync(userId);
-                // โหลดข้อมูลใบหน้า
-                LoadingMessage = "กำลังโหลดข้อมูลใบหน้าของพนักงานที่เลือก...";
-                var faceDataList = await _faceDataRepository.GetFaceDatasByUserIdAsync(userId);
+                if (SelectedEmployee == null) return;
+
                 EmployeeFaceData.Clear();
 
-                foreach (var faceData in faceDataList)
-                {
-                    EmployeeFaceData.Add(faceData);
-                }
+                EmployeeFaceData = [.. SelectedEmployee.FaceDatas];
 
                 // เลือกใบหน้าล่าสุด (ถ้ามี)
                 if (EmployeeFaceData.Count > 0)
@@ -170,9 +147,9 @@ namespace Space_FaceID.ViewModels
                 }
 
                 // โหลดรูปโปรไฟล์ (ถ้ามี)
-                if (SelectedEmployeeProfile?.ProfilePicture != null)
+                if (SelectedEmployee.Profile.ProfilePicture != null)
                 {
-                    SelectedEmployeeImage = _imageService.ByteArrayToBitmapImage(SelectedEmployeeProfile.ProfilePicture);
+                    SelectedEmployeeImage = _imageService.ByteArrayToBitmapImage(SelectedEmployee.Profile.ProfilePicture);
                 }
                 else
                 {
@@ -221,7 +198,7 @@ namespace Space_FaceID.ViewModels
                 var dialogViewModel = _serviceProvider.GetRequiredService<UserEditDialogViewModel>();
 
                 // โหลดข้อมูลพนักงานที่ต้องการแก้ไข
-                dialogViewModel.LoadUserData(SelectedEmployee, SelectedEmployeeProfile);
+                dialogViewModel.LoadUserData(SelectedEmployee);
 
                 // สร้าง Dialog View
                 var dialogView = _serviceProvider.GetRequiredService<UserEditDialogView>();
@@ -233,19 +210,32 @@ namespace Space_FaceID.ViewModels
                 // ถ้ามีการบันทึกการตั้งค่า (DialogResult == true)
                 if (result is bool dialogResult && dialogResult)
                 {
-                    await LoadEmployeeDetailsAsync();
+                    var updatedUser = await _userService.GetUserWithFullByUserIdAsync(SelectedEmployee.Id);
+
+                    if (updatedUser == null)
+                    {
+                        MessageBox.Show("ไม่พบข้อมูลพนักงานที่อัพเดต", "ข้อผิดพลาด", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    var userToFind = Employees.FirstOrDefault(e => e.Id == updatedUser.Id);
+                    if (userToFind != null)
+                    {
+                        var index = Employees.IndexOf(userToFind);
+                        if (index >= 0)
+                        {
+                            // แทนที่ object เดิมด้วย object ใหม่
+                            Employees[index] = updatedUser;
+                            SelectedEmployee = updatedUser;
+                            LoadEmployeeDetails();
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"เกิดข้อผิดพลาด: {ex.Message}", "ข้อผิดพลาด", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-
-        private async Task LoadEmployeeDetailsAsync()
-        {
-            if (SelectedEmployee == null) return;
-            await LoadEmployeeDetails(SelectedEmployee.Id);
         }
 
         [RelayCommand]
@@ -282,32 +272,17 @@ namespace Space_FaceID.ViewModels
 
                 if (result == MessageBoxResult.Yes)
                 {
-                    // ลบข้อมูลที่เกี่ยวข้องก่อน (Face Data)
                     IsLoading = true;
                     LoadingMessage = "กำลังลบข้อมูลพนักงาน...";
 
-                    // ลบข้อมูลใบหน้าทั้งหมด
-                    var faceDataList = await _faceDataRepository.GetFaceDatasByUserIdAsync(SelectedEmployee.Id);
-                    if (faceDataList.Any())
-                    {
-                        await _faceDataRepository.RemoveRangeAsync(faceDataList);
-                    }
-
-                    // ลบข้อมูลโปรไฟล์
-                    if (SelectedEmployeeProfile != null)
-                    {
-                        await _userProfileRepository.RemoveAsync(SelectedEmployeeProfile);
-                    }
-
                     // ลบข้อมูลผู้ใช้
-                    await _userRepository.RemoveAsync(SelectedEmployee);
+                    await _userService.RemoveAsync(SelectedEmployee);
 
                     // รีเฟรชข้อมูล
                     await LoadEmployeesAsync();
 
                     // รีเซ็ตการเลือก
                     SelectedEmployee = null;
-                    SelectedEmployeeProfile = null;
                     SelectedEmployeeImage = null;
                     EmployeeFaceData.Clear();
 
@@ -352,7 +327,7 @@ namespace Space_FaceID.ViewModels
                 if (result is bool dialogResult && dialogResult)
                 {
                     // โหลดข้อมูลใบหน้าใหม่
-                    await LoadEmployeeDetailsAsync();
+                    LoadEmployeeDetails();
                 }
             }
             catch (Exception ex)
@@ -385,10 +360,10 @@ namespace Space_FaceID.ViewModels
                     LoadingMessage = "กำลังลบข้อมูลใบหน้า...";
 
                     // ลบข้อมูลใบหน้า
-                    await _faceDataRepository.RemoveAsync(SelectedFace);
+                    await _faceDataService.RemoveAsync(SelectedFace);
 
                     // โหลดข้อมูลใหม่
-                    await LoadEmployeeDetailsAsync();
+                    LoadEmployeeDetails();
 
                     MessageBox.Show("ลบข้อมูลใบหน้าเรียบร้อยแล้ว", "สำเร็จ", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
@@ -410,7 +385,7 @@ namespace Space_FaceID.ViewModels
 
             if (SelectedEmployee != null)
             {
-                await LoadEmployeeDetailsAsync();
+                LoadEmployeeDetails();
             }
         }
 
