@@ -10,5 +10,6 @@ namespace Space_FaceID.Services.Interfaces
 {
     public interface IRoleService : IGenericService<Role>
     {
+        Task<List<Role>> GetRolesWithoutAdminAsync();
     }
 }

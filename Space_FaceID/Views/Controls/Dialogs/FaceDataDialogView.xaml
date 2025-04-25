@@ -23,19 +23,19 @@
                 </Grid.RowDefinitions>
 
                 <!--  Loading Indicator  -->
-                <!--<controls:LoadingControl
+                <controls:LoadingControl
                     x:Name="LoadingControl"
                     Grid.Row="0"
                     Grid.RowSpan="3"
                     Panel.ZIndex="9999"
                     IsLoading="{Binding IsLoading}"
-                    LoadingMessage="{Binding LoadingMessage}" />-->
+                    LoadingMessage="{Binding LoadingMessage}" />
 
                 <!--  หัวข้อ  -->
                 <materialDesign:ColorZone
                     Grid.Row="0"
                     Padding="16"
-                    Mode="PrimaryMid">
+                    Mode="PrimaryLight">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon
                             Width="24"
@@ -95,7 +95,17 @@
                                             ItemsSource="{Binding AvailableCameras}"
                                             SelectedIndex="{Binding SelectedCameraIndex}" />
 
-                                        <Button Command="{Binding StartCameraCommand}" Content="เปิดกล้อง" />
+                                        <Button Command="{Binding StartCameraCommand}" Style="{StaticResource MaterialDesignRaisedLightButton}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon
+                                                    Width="20"
+                                                    Height="20"
+                                                    Margin="0,0,4,0"
+                                                    VerticalAlignment="Center"
+                                                    Kind="Camera" />
+                                                <TextBlock VerticalAlignment="Center" Text="เปิดกล้อง" />
+                                            </StackPanel>
+                                        </Button>
                                     </StackPanel>
                                 </StackPanel>
 
@@ -115,11 +125,32 @@
                                     <Button
                                         Margin="0,0,8,0"
                                         Command="{Binding CaptureImageCommand}"
-                                        Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
-                                        <materialDesign:PackIcon Kind="Camera" />
+                                        Style="{StaticResource MaterialDesignRaisedLightButton}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon
+                                                Width="20"
+                                                Height="20"
+                                                Margin="0,0,4,0"
+                                                VerticalAlignment="Center"
+                                                Kind="CameraPlus" />
+                                            <TextBlock VerticalAlignment="Center" Text="จับภาพ" />
+                                        </StackPanel>
                                     </Button>
-                                    <Button Command="{Binding StopCameraCommand}" Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
-                                        <materialDesign:PackIcon Kind="Stop" />
+                                    <Button
+                                        Background="Crimson"
+                                        BorderBrush="Crimson"
+                                        Command="{Binding StopCameraCommand}"
+                                        Foreground="White"
+                                        Style="{StaticResource MaterialDesignRaisedLightButton}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon
+                                                Width="20"
+                                                Height="20"
+                                                Margin="0,0,4,0"
+                                                VerticalAlignment="Center"
+                                                Kind="Stop" />
+                                            <TextBlock VerticalAlignment="Center" Text="หยุด" />
+                                        </StackPanel>
                                     </Button>
                                 </StackPanel>
                             </Grid>
@@ -165,15 +196,24 @@
                                         Text="ภาพที่ถ่ายได้:" />
                                     <Image
                                         Margin="0,0,0,16"
-                                        Source="{Binding CapturedFace}"
+                                        Source="{Binding OriginalCapturedImage}"
                                         Stretch="Uniform" />
 
                                     <Button
                                         Margin="8,0,0,8"
                                         HorizontalAlignment="Center"
                                         Command="{Binding RetakeImageCommand}"
-                                        Content="ถ่ายใหม่"
-                                        Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                        Style="{StaticResource MaterialDesignRaisedLightButton}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon
+                                                Width="20"
+                                                Height="20"
+                                                Margin="0,0,4,0"
+                                                VerticalAlignment="Center"
+                                                Kind="CameraRefresh" />
+                                            <TextBlock VerticalAlignment="Center" Text="ถ่ายใหม่" />
+                                        </StackPanel>
+                                    </Button>
                                 </StackPanel>
                             </Grid>
                         </Border>
@@ -188,16 +228,37 @@
                     Orientation="Horizontal">
                     <Button
                         Margin="0,0,8,0"
+                        Background="Crimson"
+                        BorderBrush="Crimson"
                         Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
-                        Content="ยกเลิก"
+                        Foreground="White"
                         IsCancel="True"
-                        Style="{StaticResource MaterialDesignOutlinedButton}" />
+                        Style="{StaticResource MaterialDesignRaisedLightButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon
+                                Width="20"
+                                Height="20"
+                                Margin="0,0,4,0"
+                                VerticalAlignment="Center"
+                                Kind="CancelBold" />
+                            <TextBlock VerticalAlignment="Center" Text="ยกเลิก" />
+                        </StackPanel>
+                    </Button>
                     <Button
                         Command="{Binding SaveCommand}"
-                        Content="บันทึก"
                         IsDefault="True"
                         IsEnabled="{Binding CanSave}"
-                        Style="{StaticResource MaterialDesignRaisedButton}" />
+                        Style="{StaticResource MaterialDesignRaisedLightButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon
+                                Width="20"
+                                Height="20"
+                                Margin="0,0,4,0"
+                                VerticalAlignment="Center"
+                                Kind="ContentSave" />
+                            <TextBlock VerticalAlignment="Center" Text="บันทึก" />
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </Grid>
         </materialDesign:Card>

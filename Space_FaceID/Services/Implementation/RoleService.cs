@@ -1,5 +1,5 @@
 ﻿using Space_FaceID.Models.Entities;
-using Space_FaceID.Repositories;
+using Space_FaceID.Repositories.Interfaces;
 using Space_FaceID.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -9,14 +9,13 @@ using System.Threading.Tasks;
 
 namespace Space_FaceID.Services.Implementation
 {
-    public class RoleService : GenericService<Role>, IRoleService
+    public class RoleService(IRoleRepository roleRepository) : GenericService<Role>(roleRepository), IRoleService
     {
-        private readonly IRoleRepository _roleRepository;
+        private readonly IRoleRepository _roleRepository = roleRepository;
 
-        public RoleService(IRoleRepository roleRepository)
-            : base(roleRepository)
+        public async Task<List<Role>> GetRolesWithoutAdminAsync()
         {
-            _roleRepository = roleRepository;
+            return await _roleRepository.GetRolesWithoutAdminAsync();
         }
     }
 }

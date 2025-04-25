@@ -8,7 +8,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
@@ -22,8 +24,10 @@ namespace Space_FaceID.Services.Implementation
         private VideoCapture? _capture;
         private Mat _frame;
         private bool _isRunning = false;
-        private DispatcherTimer? _captureTimer;
+        private Task? _captureTask;
+        private CancellationTokenSource? _cancellationTokenSource;
         private BitmapSource? _currentFrame;
+        private BitmapSource? _originalFrame; // เก็บภาพต้นฉบับก่อนตีกรอบ
         private FaceDetectionSetting? _faceDetectionSetting;
 
         public CameraService(IUnitOfWorkRepository unitOfWorkRepository, IFaceDetectionService faceDetectionService, IImageService imageService)
@@ -74,14 +78,18 @@ namespace Space_FaceID.Services.Implementation
                     await LoadFaceDetectionSettingAsync();
                     await _faceDetectionService.LoadConfigurationFaceDetectorAsync();
 
-                    // ใช้ DispatcherTimer แทน Task.Run
-                    _captureTimer = new DispatcherTimer(DispatcherPriority.Render)
+                    // ใช้ Task แทน DispatcherTimer
+                    _cancellationTokenSource = new CancellationTokenSource();
+                    var token = _cancellationTokenSource.Token;
+                    
+                    _captureTask = Task.Run(async () =>
                     {
-                        Interval = TimeSpan.FromMilliseconds(33) // ประมาณ 30fps
-                    };
-
-                    _captureTimer.Tick += CaptureFrame;
-                    _captureTimer.Start();
+                        while (!token.IsCancellationRequested && _isRunning)
+                        {
+                            await CaptureFrameAsync();
+                            await Task.Delay(33, token); // ประมาณ 30fps
+                        }
+                    }, token);
                 }
 
                 return isOpened;
@@ -100,30 +108,57 @@ namespace Space_FaceID.Services.Implementation
 
             _isRunning = false;
 
-            // หยุด timer
-            if (_captureTimer != null && _captureTimer.IsEnabled)
+            // ยกเลิก task
+            if (_cancellationTokenSource != null)
             {
-                _captureTimer.Stop();
-                _captureTimer.Tick -= CaptureFrame;
-                _captureTimer = null;
+                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource.Dispose();
+                _cancellationTokenSource = null;
             }
+
+            // รอให้ task เสร็จสิ้น
+            try
+            {
+                _captureTask?.Wait(500); // รอสูงสุด 500ms
+            }
+            catch (Exception ex) when (ex is TaskCanceledException or AggregateException)
+            {
+                // ไม่ต้องทำอะไร เพราะเรายกเลิก task เอง
+                Debug.WriteLine($"Expected task cancellation: {ex.Message}");
+            }
+
+            _captureTask = null;
 
             // คืนทรัพยากร
             _capture?.Dispose();
             _capture = null;
         }
 
-        private async void CaptureFrame(object? sender, EventArgs e)
+        private async Task CaptureFrameAsync()
         {
             if (!_isRunning || _capture == null)
                 return;
             try
             {
-                if (_capture.Read(_frame) && !_frame.Empty())
+                bool success = false;
+                // อ่านภาพจากกล้องในเธรดแยกเพื่อไม่ให้ติด UI thread
+                await Task.Run(() =>
+                {
+                    if (_capture != null)
+                    {
+                        success = _capture.Read(_frame) && !_frame.Empty();
+                    }
+                });
+
+                if (success)
                 {
                     // แปลงภาพเป็น BitmapSource
                     var frameImage = _frame.ToBitmapSource();
                     frameImage.Freeze(); // สำคัญมาก: ทำให้สามารถส่งระหว่างเธรดได้
+
+                    // เก็บภาพต้นฉบับ
+                    _originalFrame = frameImage.Clone();
+                    _originalFrame.Freeze();
 
                     if (_faceDetectionSetting != null && _faceDetectionSetting.IsEnabled)
                     {
@@ -156,7 +191,11 @@ namespace Space_FaceID.Services.Implementation
                         _currentFrame = frameImage;
                     }
 
-                    NewFrameAvailable?.Invoke(this, _currentFrame);
+                    // การแจ้งเตือนการปรับปรุง UI ต้องทำใน UI thread เท่านั้น
+                    await Application.Current.Dispatcher.InvokeAsync(() => 
+                    {
+                        NewFrameAvailable?.Invoke(this, _currentFrame);
+                    });
                 }
             }
             catch (Exception ex)
@@ -167,15 +206,20 @@ namespace Space_FaceID.Services.Implementation
 
         public BitmapSource? CaptureFrame()
         {
-            if (!_isRunning || _currentFrame == null)
+            if (!_isRunning || _originalFrame == null)
                 return null;
 
-            return _currentFrame;
+            return _originalFrame;
         }
 
         public BitmapSource? GetCurrentFrame()
         {
             return _currentFrame;
+        }
+
+        public BitmapSource? GetOriginalFrame()
+        {
+            return _originalFrame;
         }
 
         public async Task<List<int>> FindConnectedCamerasAsync()
@@ -212,6 +256,7 @@ namespace Space_FaceID.Services.Implementation
         {
             StopCamera();
             _frame?.Dispose();
+            _cancellationTokenSource?.Dispose();
         }
     }
 }

@@ -11,5 +11,8 @@ namespace Space_FaceID.Services.Interfaces
     {
         Task<List<User>> GetAllUserWithFullAsync();
         Task<User?> GetUserWithFullByUserIdAsync(int userId);
+        Task<bool> ChangePasswordAsync(int userId, string newPassword);
+        Task<User> RegisterAsync(User user, string password);
+        Task<User?> GetUserByUsernameAsync(string username);
     }
 }

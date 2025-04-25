@@ -36,10 +36,12 @@ namespace Space_FaceID.Views.Controls
         private async void DashboardUserControl_Loaded(object sender, RoutedEventArgs e)
         {
             // สำหรับกรณีที่มีการเปลี่ยนหน้ากลับมาที่ Dashboard อีกครั้ง
-            if (!_viewModel.IsCameraActive)
+            if (_viewModel.IsCameraActive)
             {
-                await _viewModel.StartCameraAsync();
+                _viewModel.StopCamera();
             }
+
+            await _viewModel.StartCameraAsync();
         }
 
         private void DashboardUserControl_Unloaded(object sender, RoutedEventArgs e)

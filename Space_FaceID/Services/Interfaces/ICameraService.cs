@@ -14,6 +14,7 @@ namespace Space_FaceID.Services.Interfaces
         void StopCamera();
         BitmapSource? CaptureFrame();
         BitmapSource? GetCurrentFrame();
+        BitmapSource? GetOriginalFrame();
         bool IsRunning { get; }
         Task<List<int>> FindConnectedCamerasAsync();
     }

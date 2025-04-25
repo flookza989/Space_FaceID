@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
+using OfficeOpenXml;
 using Space_FaceID.Data.Seed;
 using Space_FaceID.DI;
 using Space_FaceID.Views.Windows;
@@ -25,6 +26,9 @@ namespace Space_FaceID
             SQLitePCL.Batteries.Init();
 
             await _host.StartAsync();
+
+            // กำหนด LicenseContext สำหรับ EPPlus
+            ExcelPackage.License.SetNonCommercialPersonal("<Wanchaloem>");
 
             // เพิ่มข้อมูลเริ่มต้นลงในฐานข้อมูล
             await DataSeeder.SeedDatabase(_host);

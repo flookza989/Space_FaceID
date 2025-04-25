@@ -2,8 +2,10 @@
     x:Class="Space_FaceID.Views.Controls.Dialogs.UserEditDialogView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behaviors="clr-namespace:Space_FaceID.Behaviors"
     xmlns:controls="clr-namespace:Space_FaceID.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:Space_FaceID.Views.Controls.Dialogs"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -46,7 +48,7 @@
                             VerticalAlignment="Center"
                             FontSize="18"
                             FontWeight="Medium"
-                            Text="แก้ไขข้อมูลพนักงาน" />
+                            Text="{Binding IsNewUser, Converter={StaticResource BooleanConverter}, ConverterParameter='เพิ่มพนักงานใหม่|แก้ไขข้อมูลพนักงาน'}" />
                     </StackPanel>
                 </materialDesign:ColorZone>
 
@@ -127,11 +129,45 @@
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
+
+                                    <!--  ชื่อผู้ใช้และบทบาท  -->
+                                    <Grid
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBox
+                                            Grid.Column="0"
+                                            Margin="0,0,8,16"
+                                            materialDesign:HintAssist.Hint="ชื่อผู้ใช้*"
+                                            IsEnabled="{Binding IsNewUser}"
+                                            Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                            Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" />
+
+                                        <ComboBox
+                                            Grid.Column="1"
+                                            Margin="0,0,0,16"
+                                            materialDesign:HintAssist.Hint="บทบาท*"
+                                            DisplayMemberPath="Name"
+                                            IsEnabled="{Binding CanChangeRole}"
+                                            ItemsSource="{Binding AvailableRoles}"
+                                            SelectedItem="{Binding SelectedRole}"
+                                            Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+                                    </Grid>
 
                                     <!--  ชื่อ-นามสกุล  -->
                                     <TextBox
-                                        Grid.Row="0"
+                                        Grid.Row="1"
                                         Grid.Column="0"
                                         Margin="0,0,8,16"
                                         materialDesign:HintAssist.Hint="ชื่อ"
@@ -139,7 +175,7 @@
                                         Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" />
 
                                     <TextBox
-                                        Grid.Row="0"
+                                        Grid.Row="1"
                                         Grid.Column="1"
                                         Margin="0,0,0,16"
                                         materialDesign:HintAssist.Hint="นามสกุล"
@@ -148,7 +184,7 @@
 
                                     <!--  อีเมล-เบอร์โทร  -->
                                     <TextBox
-                                        Grid.Row="1"
+                                        Grid.Row="2"
                                         Grid.Column="0"
                                         Margin="0,0,8,16"
                                         materialDesign:HintAssist.Hint="อีเมล"
@@ -156,7 +192,7 @@
                                         Text="{Binding Email}" />
 
                                     <TextBox
-                                        Grid.Row="1"
+                                        Grid.Row="2"
                                         Grid.Column="1"
                                         Margin="0,0,0,16"
                                         materialDesign:HintAssist.Hint="เบอร์โทรศัพท์"
@@ -165,15 +201,15 @@
 
                                     <!--  วันเกิด-เพศ  -->
                                     <DatePicker
-                                        Grid.Row="2"
+                                        Grid.Row="3"
                                         Grid.Column="0"
                                         Margin="0,0,8,16"
                                         materialDesign:HintAssist.Hint="วันเกิด"
                                         Style="{StaticResource MaterialDesignOutlinedDatePicker}"
-                                        Text="{Binding DateOfBirth, StringFormat=dd/MM/yyyy}" />
+                                        SelectedDate="{Binding DateOfBirth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                                     <ComboBox
-                                        Grid.Row="2"
+                                        Grid.Row="3"
                                         Grid.Column="1"
                                         Margin="0,0,0,16"
                                         materialDesign:HintAssist.Hint="เพศ"
@@ -183,7 +219,7 @@
 
                                     <!--  สถานะการใช้งาน  -->
                                     <StackPanel
-                                        Grid.Row="3"
+                                        Grid.Row="4"
                                         Grid.Column="0"
                                         Margin="0,0,0,16"
                                         Orientation="Horizontal">
@@ -195,7 +231,7 @@
 
                                     <!--  ที่อยู่  -->
                                     <TextBox
-                                        Grid.Row="4"
+                                        Grid.Row="5"
                                         Grid.Column="0"
                                         Grid.ColumnSpan="2"
                                         Margin="0,0,0,16"
@@ -205,6 +241,104 @@
                                         Text="{Binding Address}"
                                         TextWrapping="Wrap"
                                         VerticalScrollBarVisibility="Auto" />
+
+                                    <!--  เปลี่ยนรหัสผ่าน  -->
+                                    <TextBlock
+                                        Grid.Row="6"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="2"
+                                        Margin="0,16,0,16"
+                                        FontSize="16"
+                                        FontWeight="Medium"
+                                        Text="{Binding IsNewUser, Converter={StaticResource BooleanConverter}, ConverterParameter='ตั้งรหัสผ่าน|การเปลี่ยนรหัสผ่าน'}" />
+
+                                    <CheckBox
+                                        Grid.Row="7"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="2"
+                                        Margin="0,0,0,16"
+                                        Content="เปลี่ยนรหัสผ่าน"
+                                        IsChecked="{Binding IsChangePassword}"
+                                        Visibility="{Binding IsNewUser, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" />
+
+                                    <Grid
+                                        Grid.Row="8"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="2">
+                                        <Grid.Style>
+                                            <Style TargetType="Grid">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding IsNewUser}" Value="False" />
+                                                            <Condition Binding="{Binding IsChangePassword}" Value="True" />
+                                                        </MultiDataTrigger.Conditions>
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </MultiDataTrigger>
+                                                    <DataTrigger Binding="{Binding IsNewUser}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Grid.Style>
+
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <!--  รหัสผ่านใหม่  -->
+                                        <PasswordBox
+                                            Grid.Row="0"
+                                            Grid.Column="0"
+                                            Margin="0,0,8,16"
+                                            materialDesign:HintAssist.Hint="{Binding IsNewUser, Converter={StaticResource BooleanConverter}, ConverterParameter='รหัสผ่านใหม่*|รหัสผ่านใหม่'}"
+                                            materialDesign:TextFieldAssist.HasClearButton="True"
+                                            Style="{StaticResource MaterialDesignOutlinedPasswordBox}">
+                                            <i:Interaction.Behaviors>
+                                                <behaviors:PasswordBehavior Password="{Binding NewPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            </i:Interaction.Behaviors>
+                                        </PasswordBox>
+
+                                        <!--  ยืนยันรหัสผ่านใหม่  -->
+                                        <PasswordBox
+                                            Grid.Row="0"
+                                            Grid.Column="1"
+                                            Margin="0,0,0,16"
+                                            materialDesign:HintAssist.Hint="{Binding IsNewUser, Converter={StaticResource BooleanConverter}, ConverterParameter='ยืนยันรหัสผ่านใหม่*|ยืนยันรหัสผ่านใหม่'}"
+                                            materialDesign:TextFieldAssist.HasClearButton="True"
+                                            Style="{StaticResource MaterialDesignOutlinedPasswordBox}">
+                                            <i:Interaction.Behaviors>
+                                                <behaviors:PasswordBehavior Password="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            </i:Interaction.Behaviors>
+                                        </PasswordBox>
+
+                                        <!--  ข้อความแสดงความผิดพลาด  -->
+                                        <TextBlock
+                                            Grid.Row="1"
+                                            Grid.Column="0"
+                                            Grid.ColumnSpan="2"
+                                            Margin="0,0,0,16"
+                                            Foreground="Red"
+                                            Text="{Binding PasswordErrorMessage}"
+                                            Visibility="{Binding PasswordErrorMessage, Converter={StaticResource NotNullToVisibilityConverter}}" />
+
+                                        <!--  ข้อความแสดงข้อมูลจำเป็น  -->
+                                        <TextBlock
+                                            Grid.Row="2"
+                                            Grid.Column="0"
+                                            Grid.ColumnSpan="2"
+                                            Margin="0,0,0,8"
+                                            FontSize="12"
+                                            Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                            Text="* หมายถึงข้อมูลที่จำเป็นต้องกรอก" />
+                                    </Grid>
                                 </Grid>
                             </StackPanel>
                         </Grid>
@@ -229,7 +363,7 @@
                                 materialDesign:ElevationAssist.Elevation="Dp2"
                                 Command="{Binding SaveCommand}"
                                 Content="บันทึก"
-                                IsEnabled="{Binding IsDataChanged}"
+                                IsEnabled="{Binding CanSave}"
                                 Style="{StaticResource MaterialDesignFlatLightBgButton}" />
                         </StackPanel>
 

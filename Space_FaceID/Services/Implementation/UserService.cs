@@ -9,22 +9,31 @@ using System.Threading.Tasks;
 
 namespace Space_FaceID.Services.Implementation
 {
-    public class UserService : GenericService<User>, IUserService
+    public class UserService(IUnitOfWorkRepository unitOfWorkRepository) : GenericService<User>(unitOfWorkRepository.UserRepository), IUserService
     {
-        private readonly IUnitOfWorkRepository _unitOfWorkRepository;
-        public UserService(IUnitOfWorkRepository unitOfWorkRepository) : base(unitOfWorkRepository.UserRepository)
-        {
-            _unitOfWorkRepository = unitOfWorkRepository;
-        }
-
         public async Task<List<User>> GetAllUserWithFullAsync()
         {
-            return await _unitOfWorkRepository.UserRepository.GetAllUserWithFullAsync();
+            return await unitOfWorkRepository.UserRepository.GetAllUserWithFullAsync();
         }
 
         public async Task<User?> GetUserWithFullByUserIdAsync(int userId)
         {
-            return await _unitOfWorkRepository.UserRepository.GetUserWithFullByUserIdAsync(userId);
+            return await unitOfWorkRepository.UserRepository.GetUserWithFullByUserIdAsync(userId);
+        }
+
+        public async Task<bool> ChangePasswordAsync(int userId, string newPassword)
+        {
+            return await unitOfWorkRepository.UserRepository.UpdatePasswordAsync(userId, newPassword);
+        }
+
+        public async Task<User> RegisterAsync(User user, string password)
+        {
+            return await unitOfWorkRepository.UserRepository.RegisterUserAsync(user, password);
+        }
+
+        public async Task<User?> GetUserByUsernameAsync(string username)
+        {
+            return await unitOfWorkRepository.UserRepository.GetUserByUsernameAsync(username);
         }
     }
 }

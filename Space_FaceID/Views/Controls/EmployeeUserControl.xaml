@@ -95,35 +95,107 @@
                         </StackPanel>
                     </materialDesign:ColorZone>
 
-                    <!--  แถบค้นหา  -->
-                    <Grid
-                        x:Name="SearchGrid"
-                        Margin="16,16,16,0"
-                        DockPanel.Dock="Top">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBox
-                            x:Name="SearchBox"
-                            Margin="0,0,8,0"
-                            materialDesign:HintAssist.Hint="ค้นหาพนักงาน..."
-                            Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
-                        <Button
-                            x:Name="RefreshButton"
-                            Grid.Column="1"
-                            Command="{Binding RefreshCommand}"
-                            Style="{StaticResource MaterialDesignIconButton}"
-                            ToolTip="รีเฟรชข้อมูล">
-                            <materialDesign:PackIcon Kind="Refresh" />
-                        </Button>
-                    </Grid>
+                    <!--  แถบค้นหาและเครื่องมือ  -->
+                    <StackPanel DockPanel.Dock="Top">
+                        <Grid x:Name="SearchGrid" Margin="16,16,16,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox
+                                x:Name="SearchBox"
+                                Margin="0,0,8,0"
+                                materialDesign:HintAssist.Hint="ค้นหาพนักงาน..."
+                                Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+                            <Button
+                                x:Name="RefreshButton"
+                                Grid.Column="1"
+                                Command="{Binding RefreshCommand}"
+                                Style="{StaticResource MaterialDesignIconButton}"
+                                ToolTip="รีเฟรชข้อมูล">
+                                <materialDesign:PackIcon Kind="Refresh" />
+                            </Button>
+                        </Grid>
+
+                        <!--  ปุ่มเพิ่มพนักงาน นำเข้า และดาวน์โหลด Template  -->
+                        <Grid x:Name="ToolbarGrid" Margin="16,16,16,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="5*" />
+                                <ColumnDefinition Width="5*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <!--  ปุ่มเพิ่มพนักงาน  -->
+                            <Button
+                                x:Name="AddEmployeeButton"
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Margin="0,0,8,0"
+                                Command="{Binding AddEmployeeCommand}"
+                                Style="{StaticResource MaterialDesignRaisedLightButton}"
+                                ToolTip="เพิ่มพนักงานใหม่">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon
+                                        Width="20"
+                                        Height="20"
+                                        Margin="0,0,4,0"
+                                        VerticalAlignment="Center"
+                                        Kind="AccountPlus" />
+                                    <TextBlock Text="เพิ่มพนักงาน" />
+                                </StackPanel>
+                            </Button>
+
+                            <!--  ปุ่มนำเข้าจาก Excel  -->
+                            <Button
+                                x:Name="ImportExcelButton"
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Margin="0,0,0,0"
+                                Command="{Binding ImportFromExcelCommand}"
+                                Style="{StaticResource MaterialDesignRaisedLightButton}"
+                                ToolTip="นำเข้าพนักงานจากไฟล์ Excel">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon
+                                        Width="20"
+                                        Height="20"
+                                        Margin="0,0,4,0"
+                                        VerticalAlignment="Center"
+                                        Kind="FileExcel" />
+                                    <TextBlock Text="นำเข้าจาก Excel" />
+                                </StackPanel>
+                            </Button>
+
+                            <!--  ปุ่มดาวน์โหลด Template  -->
+                            <Button
+                                x:Name="DownloadTemplateButton"
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"
+                                Margin="0,8,0,0"
+                                Command="{Binding DownloadTemplateCommand}"
+                                Style="{StaticResource MaterialDesignRaisedLightButton}"
+                                ToolTip="ดาวน์โหลดเทมเพลต Excel สำหรับนำเข้าพนักงาน">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon
+                                        Width="20"
+                                        Height="20"
+                                        Margin="0,0,4,0"
+                                        VerticalAlignment="Center"
+                                        Kind="Download" />
+                                    <TextBlock Text="ดาวน์โหลด Template" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                    </StackPanel>
 
                     <!--  รายการพนักงาน  -->
                     <ListView
                         x:Name="EmployeesListView"
                         Margin="0,16,0,0"
-                        ItemsSource="{Binding Employees}"
+                        ItemsSource="{Binding FilteredEmployees}"
                         SelectedItem="{Binding SelectedEmployee}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
@@ -400,18 +472,36 @@
                                     Margin="0,0,8,0"
                                     materialDesign:ElevationAssist.Elevation="Dp2"
                                     Command="{Binding EditEmployeeCommand}"
-                                    Content="แก้ไขข้อมูล"
-                                    Style="{StaticResource MaterialDesignFlatLightBgButton}" />
+                                    Style="{StaticResource MaterialDesignFlatLightBgButton}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon
+                                            Width="20"
+                                            Height="20"
+                                            Margin="0,0,4,0"
+                                            VerticalAlignment="Center"
+                                            Kind="Edit" />
+                                        <TextBlock Text="แก้ไขข้อมูล" />
+                                    </StackPanel>
+                                </Button>
                                 <Button
                                     x:Name="DeleteButton"
                                     materialDesign:ElevationAssist.Elevation="Dp2"
                                     Background="Crimson"
                                     BorderBrush="Crimson"
                                     Command="{Binding DeleteEmployeeCommand}"
-                                    Content="ลบพนักงาน"
                                     Foreground="White"
                                     Style="{StaticResource MaterialDesignFlatLightBgButton}"
-                                    Visibility="{Binding IsAdmin, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" />
+                                    Visibility="{Binding IsAdmin, Converter={StaticResource InvertedBooleanToVisibilityConverter}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon
+                                            Width="20"
+                                            Height="20"
+                                            Margin="0,0,4,0"
+                                            VerticalAlignment="Center"
+                                            Kind="Remove" />
+                                        <TextBlock Text="ลบพนักงาน" />
+                                    </StackPanel>
+                                </Button>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
@@ -442,7 +532,7 @@
                                             Margin="0,0,10,0"
                                             VerticalAlignment="Center"
                                             Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}"
-                                            Kind="Face" />
+                                            Kind="FaceRecognition" />
                                         <TextBlock
                                             x:Name="FaceDataHeaderText"
                                             VerticalAlignment="Center"
@@ -452,14 +542,7 @@
                                             Text="ข้อมูลใบหน้า" />
                                     </StackPanel>
 
-                                    <Button
-                                        x:Name="AddFaceDataButton"
-                                        Grid.Column="1"
-                                        materialDesign:ElevationAssist.Elevation="Dp2"
-                                        Command="{Binding AddFaceDataCommand}"
-                                        Style="{StaticResource MaterialDesignIconForegroundButton}">
-                                        <materialDesign:PackIcon Kind="Plus" />
-                                    </Button>
+
                                 </Grid>
                             </materialDesign:ColorZone>
 
@@ -477,6 +560,31 @@
                                     Padding="8"
                                     UniformCornerRadius="4">
                                     <DockPanel x:Name="FaceDataListPanel">
+
+                                        <Button
+                                            x:Name="AddFaceDataButton"
+                                            Margin="0,0,0,8"
+                                            materialDesign:ElevationAssist.Elevation="Dp2"
+                                            Command="{Binding AddFaceDataCommand}"
+                                            DockPanel.Dock="Top"
+                                            Style="{StaticResource MaterialDesignRaisedLightButton}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon
+                                                    Width="12"
+                                                    Height="12"
+                                                    Margin="2,0,0,0"
+                                                    Kind="Plus" />
+                                                <materialDesign:PackIcon
+                                                    Width="20"
+                                                    Height="20"
+                                                    Margin="0,0,4,0"
+                                                    VerticalAlignment="Center"
+                                                    Kind="FaceRecognition" />
+
+                                                <TextBlock Text="เพิ่มใบหน้า" />
+                                            </StackPanel>
+                                        </Button>
+
                                         <TextBlock
                                             x:Name="FaceDataListTitle"
                                             Margin="8,8,8,16"
